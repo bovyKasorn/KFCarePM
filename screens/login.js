@@ -1,45 +1,62 @@
+import React from 'react'
+import { View, Text, Image, TouchableHighlight } from 'react-native'
+import styled from 'styled-components'
+import { Button, InputLogin, Container, Segment } from '../components'
 
-import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View, Button} from 'react-native';
-const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
-  android:
-    'Double tap R on your keyboard to reload,\n' +
-    'Shake or press menu button for dev menu',
-});
+const LoginBackground = styled(Image)`
+  position: absolute;
+  bottom: 0;
+  left: -10;
+  right: 0;
+  flex: 1;
+  height: 52%;
+  width: 280%;
+`
 
-type Props = {};
-export default class Login extends Component<Props> {
-  static navigationOptions = {header: null };
+class Login extends React.Component {
+  static navigationOptions = ({ navigation, navigationOptions }) => {
+    return {
+      header: null
+    }
+  }
+
   render() {
-    const {navigate} = this.props.navigation;
+    const { navigation } = this.props
+
     return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>Welcome to React Native!</Text>
-        <Button
-        title="ForgetPassword"
-        onPress={() => navigate('ForgetPassword')}
-      />
-      </View>
-    );
+      <Container>
+        <LoginBackground source={require('../assets/images/bgLogin.png')} />
+        {/* <Image
+          source={require('../assets/images/bgLogin.png')}
+          resizeMode="contain"
+        /> */}
+        <Segment.Center>
+          <InputLogin placeholder="Email" />
+          <InputLogin password placeholder="Password" />
+        </Segment.Center>
+        <Segment.Center>
+          <Button onPress={() => console.log('123')}>Sign In</Button>
+          <TouchableHighlight
+            underlayColor="#ffffff"
+            onPress={() => console.log('123')}
+          >
+            <Text style={{ textDecorationLine: 'underline' }}>
+              Forgot Password?
+            </Text>
+          </TouchableHighlight>
+        </Segment.Center>
+        <Segment.CenterBottom>
+          <Button
+            small={1}
+            secondary={1}
+            onPress={() => navigation.navigate('Register')}
+          >
+            Create a new account
+          </Button>
+        </Segment.CenterBottom>
+      </Container>
+    )
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
-});
+export { Login }

@@ -49,17 +49,17 @@ class KeyboardAvoidAndScroll extends Component {
     })
   }
 
-  _keyboardDidShow = e => {
-    this.setState({
-      keyboardOpen: true
-    })
-  }
+  // _keyboardDidShow = e => {
+  //   this.setState({
+  //     keyboardOpen: true
+  //   })
+  // }
 
-  _keyboardDidHide = e => {
-    this.setState({
-      keyboardOpen: false
-    })
-  }
+  // _keyboardDidHide = e => {
+  //   this.setState({
+  //     keyboardOpen: false
+  //   })
+  // }
 
   render() {
     const { keyboardOpen } = this.state

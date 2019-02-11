@@ -1,50 +1,21 @@
-import React, { Component } from 'react'
+import React from 'react'
 import {
   createStackNavigator,
   createAppContainer,
   createSwitchNavigator
 } from 'react-navigation'
-import { Image } from 'react-native'
-import styled from 'styled-components'
-import { Login, Register } from './screens'
-import { normalize } from './utilities'
+import {
+  headerStyle,
+  headerTitleStyle,
+  headerLeftContainerStyle,
+  headerRightContainerStyle,
+  headerBackImage
+} from './Topbar'
+import { Login, Register, ForgotPassword } from './screens'
 
-const theme = {
-  topbar: {
-    color: '#D0103A',
-    margin: normalize(25),
-    font: {
-      size: normalize(16),
-      color: '#ffffff'
-    }
-  }
-}
-
-const BackButton = styled(Image)`
-  width: 100%;
-  height: ${normalize(26)};
-`
-
-const TopbarAuth = {
-  headerStyle: {
-    backgroundColor: theme.topbar.color,
-    borderBottomWidth: 0
-  },
-  headerTitleStyle: {
-    fontSize: theme.topbar.font.size,
-    color: theme.topbar.font.color
-  },
-  headerLeftContainerStyle: {
-    width: '2%',
-    marginLeft: theme.topbar.margin
-  },
-  headerBackTitle: null,
-  headerBackImage: (
-    <BackButton
-      source={require('./assets/images/btnBackward.png')}
-      resizeMode="stretch"
-    />
-  )
+const titleTopbar = {
+  register: 'Create an Account',
+  forgot_pass: 'Forgot Password'
 }
 
 const AuthNavigator = createStackNavigator(
@@ -52,19 +23,68 @@ const AuthNavigator = createStackNavigator(
     Login: {
       screen: Login
     },
-    Register: {
-      screen: Register
+    RegisterInfo: {
+      screen: Register.Info,
+      navigationOptions: {
+        title: titleTopbar.register
+      }
+    },
+    RegisterSuccess: {
+      screen: Register.Success,
+      navigationOptions: {
+        title: titleTopbar.register,
+        headerLeft: null
+      }
+    },
+    ForgotPasswordInfo: {
+      screen: ForgotPassword.Info,
+      navigationOptions: {
+        title: titleTopbar.forgot_pass
+      }
+    },
+    ForgotPasswordSuccess: {
+      screen: ForgotPassword.Success,
+      navigationOptions: {
+        title: titleTopbar.forgot_pass
+      }
     }
   },
   {
     initialRouteName: 'Login',
-    defaultNavigationOptions: TopbarAuth
+    defaultNavigationOptions: {
+      headerStyle,
+      headerTitleStyle,
+      headerLeftContainerStyle,
+      headerRightContainerStyle,
+      headerBackTitle: null,
+      headerBackImage
+    }
   }
 )
 
-const Navigator = createStackNavigator({
-  Details: { screen: Register }
-})
+const MainNavigator = createStackNavigator(
+  {
+    Home: {
+      screen: Register.Info,
+
+      navigationOptions: {
+        title: titleTopbar.register
+      }
+    }
+  },
+  {
+    initialRouteName: 'Home',
+    defaultNavigationOptions: navigation => ({
+      headerStyle,
+      headerTitleStyle,
+      headerLeftContainerStyle,
+      headerRightContainerStyle,
+      headerBackTitle: null,
+      headerBackImage
+      // headerRight: <Test navigation={navigation} />
+    })
+  }
+)
 
 const AppContainer = createAppContainer(
   createSwitchNavigator(
@@ -73,7 +93,7 @@ const AppContainer = createAppContainer(
         screen: AuthNavigator
       },
       App: {
-        screen: Navigator
+        screen: MainNavigator
       }
     },
     {

@@ -4,13 +4,16 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   Platform,
-  Keyboard
+  Keyboard,
+  Dimensions
 } from 'react-native'
+
+const { height } = Dimensions.get('window')
 
 class KeyboardAvoidAndScroll extends Component {
   constructor(props) {
     super(props)
-    this.state = { keyboardOpen: false }
+    this.state = { keyboardOpen: false, screenHeight: 0 }
   }
 
   componentDidMount() {
@@ -22,19 +25,11 @@ class KeyboardAvoidAndScroll extends Component {
       'keyboardWillHide',
       e => this._keyboardWillHide(e)
     )
-    // this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', e =>
-    //   this._keyboardDidShow(e)
-    // )
-    // this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', e =>
-    //   this._keyboardDidHide(e)
-    // )
   }
 
   componentWillUnmount() {
     this.keyboardWillShowListener.remove()
     this.keyboardWillHideListener.remove()
-    // this.keyboardDidShowListener.remove()
-    // this.keyboardDidHideListener.remove()
   }
 
   _keyboardWillShow = e => {
@@ -49,20 +44,14 @@ class KeyboardAvoidAndScroll extends Component {
     })
   }
 
-  _keyboardDidShow = e => {
-    this.setState({
-      keyboardOpen: true
-    })
-  }
-
-  _keyboardDidHide = e => {
-    this.setState({
-      keyboardOpen: false
-    })
+  onContentSizeChange = (contentWidth, contentHeight) => {
+    this.setState({ screenHeight: contentHeight })
   }
 
   render() {
-    const { keyboardOpen } = this.state
+    const { keyboardOpen, screenHeight } = this.state
+    const scrollEnabled = screenHeight > height || keyboardOpen
+
     return (
       <KeyboardAvoidingView
         flex={1}
@@ -72,7 +61,8 @@ class KeyboardAvoidAndScroll extends Component {
       >
         <ScrollView
           flex={1}
-          scrollEnabled={Platform.OS === 'android' ? true : keyboardOpen}
+          scrollEnabled={scrollEnabled}
+          onContentSizeChange={this.onContentSizeChange}
         >
           {this.props.children}
         </ScrollView>

@@ -9,7 +9,9 @@ const Container = styled(View)`
   flex-direction: column;
   padding-top: ${normalize(15)};
   padding-bottom: ${normalize(15)};
-  padding-left: ${normalize(15)};
-  padding-right: ${normalize(15)};
+  padding-left: ${props =>
+    props.noPdSide === 1 ? normalize(0) : normalize(15)};
+  padding-right: ${props =>
+    props.noPdSide === 1 ? normalize(0) : normalize(15)};
 `
 export { Container }

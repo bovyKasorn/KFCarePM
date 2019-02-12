@@ -2,16 +2,19 @@ import React from 'react'
 import {
   createStackNavigator,
   createAppContainer,
-  createSwitchNavigator
+  createSwitchNavigator,
+  createDrawerNavigator
 } from 'react-navigation'
 import {
+  DrawerCustom,
   headerStyle,
   headerTitleStyle,
   headerLeftContainerStyle,
   headerRightContainerStyle,
-  headerBackImage
-} from './Topbar'
-import { Login, Register, ForgotPassword } from './screens'
+  headerBackImage,
+  HeaderDrawerButton
+} from './containers'
+import { Login, Register, ForgotPassword, Home } from './screens'
 
 const titleTopbar = {
   register: 'Create an Account',
@@ -62,27 +65,35 @@ const AuthNavigator = createStackNavigator(
   }
 )
 
-const MainNavigator = createStackNavigator(
+const MainNavigatorWithDrawer = createDrawerNavigator(
   {
-    Home: {
-      screen: Register.Info,
-
-      navigationOptions: {
-        title: titleTopbar.register
-      }
+    MainNavigator: {
+      screen: createStackNavigator(
+        {
+          Home: {
+            screen: Home,
+            navigationOptions: {
+              title: 'All'
+            }
+          }
+        },
+        {
+          initialRouteName: 'Home',
+          defaultNavigationOptions: ({ navigation }) => ({
+            headerStyle,
+            headerTitleStyle,
+            headerLeftContainerStyle,
+            headerRightContainerStyle,
+            headerBackTitle: null,
+            headerBackImage,
+            headerRight: <HeaderDrawerButton navigation={navigation} />
+          })
+        }
+      )
     }
   },
   {
-    initialRouteName: 'Home',
-    defaultNavigationOptions: navigation => ({
-      headerStyle,
-      headerTitleStyle,
-      headerLeftContainerStyle,
-      headerRightContainerStyle,
-      headerBackTitle: null,
-      headerBackImage
-      // headerRight: <Test navigation={navigation} />
-    })
+    contentComponent: DrawerCustom
   }
 )
 
@@ -93,7 +104,7 @@ const AppContainer = createAppContainer(
         screen: AuthNavigator
       },
       App: {
-        screen: MainNavigator
+        screen: MainNavigatorWithDrawer
       }
     },
     {

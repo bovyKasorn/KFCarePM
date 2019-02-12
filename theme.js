@@ -28,6 +28,12 @@ const mainTheme = {
       text: '#FFFFFF'
     },
 
+    font: {
+      primary: '#015151',
+      secondary: '#D0103A',
+      grey: '#616161'
+    },
+
     font_auth: {
       H1: '#014040',
       H2: '#014040',

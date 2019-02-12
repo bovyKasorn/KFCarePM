@@ -14,6 +14,7 @@ const H2 = styled(Text)`
 const Content = styled(Text)`
   font-size: ${normalize(10.5)};
   color: ${props => props.theme.color.font_auth.content};
+  text-align: ${props => (props.align ? props.align : 'left')};
 `
 
 const Label = styled(Text)`

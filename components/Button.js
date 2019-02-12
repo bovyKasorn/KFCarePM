@@ -5,7 +5,7 @@ import maintheme from '../theme'
 import { normalize } from '../utilities'
 
 const ButtonPrimary = styled(TouchableHighlight)`
-  min-width: 50%;
+  min-width: 45%;
   align-items: center;
   background-color: ${props =>
     props.secondary === 1
@@ -14,8 +14,8 @@ const ButtonPrimary = styled(TouchableHighlight)`
   border-radius: 3;
   padding-top: ${props => (props.small === 1 ? normalize(6) : normalize(8))};
   padding-bottom: ${props => (props.small === 1 ? normalize(6) : normalize(8))};
-  padding-left: ${normalize(20)};
-  padding-right: ${normalize(20)};
+  padding-left: ${normalize(18)};
+  padding-right: ${normalize(18)};
 `
 
 const ButtonText = styled(Text)`

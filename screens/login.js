@@ -14,9 +14,15 @@ const LoginBackground = styled(Image)`
   width: 280%;
 `
 
+const LogoImage = styled(Image)`
+  width: 78%;
+  height: 100%;
+`
+
 const TextLinkText = styled(Text)`
   color: ${props => props.theme.color.textlink};
   text-decoration-line: underline;
+  text-align: center;
 `
 
 const TextLink = props => {
@@ -44,20 +50,28 @@ class Login extends React.Component {
     return (
       <Container>
         <LoginBackground source={require('../assets/images/bgLogin.png')} />
-        {/* <Image
-          source={require('../assets/images/bgLogin.png')}
-          resizeMode="contain"
-        /> */}
+
+        <Segment.Center flex={1.6}>
+          <LogoImage
+            source={require('../assets/images/Logo_KnightFrank.png')}
+            resizeMode="contain"
+          />
+        </Segment.Center>
+
         <Segment.Center flex={1}>
           <InputLogin placeholder="Email" />
           <InputLogin password placeholder="Password" />
         </Segment.Center>
+
         <Segment.Center flex={1}>
-          <Button onPress={() => navigation.navigate('Home')}>Sign In</Button>
-          <Space pdtop={normalize(24)}>
-            <TextLink navigation={navigation}>Forget Password?</TextLink>
+          <Space pdtop={24}>
+            <Button onPress={() => navigation.navigate('Home')}>Sign In</Button>
+            <Space pdtop={24}>
+              <TextLink navigation={navigation}>Forget Password?</TextLink>
+            </Space>
           </Space>
         </Segment.Center>
+
         <Segment.CenterBottom flex={1}>
           <Button
             small={1}

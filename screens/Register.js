@@ -1,5 +1,5 @@
 import React from 'react'
-import { Image } from 'react-native'
+import { Image, Platform } from 'react-native'
 import styled from 'styled-components'
 import {
   Bullet,
@@ -12,11 +12,43 @@ import {
   Segment,
   Space
 } from '../components'
-import { KeyboardAvoidAndScroll } from '../containers'
+import { KeyboardAvoidAndScroll, SelectSections } from '../containers'
 import { normalize } from '../utilities'
+import apiRegister from '../api/Register'
 
-class RegisterInfomation extends React.Component {
+class RegisterInformation extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      fullName: null,
+      email: null,
+      username: null,
+      password: null,
+      empId: null,
+      mobile: null,
+      sectionSelected: Platform.OS === 'android' ? 1 : null
+    }
+  }
+
+  handleInput = (text, name) => {
+    this.setState({ [name]: text })
+  }
+
+  updateSection = section => {
+    this.setState({ sectionSelected: section })
+  }
+
   render() {
+    const {
+      fullName,
+      email,
+      username,
+      password,
+      empId,
+      mobile,
+      sectionSelected
+    } = this.state
+
     const { navigation } = this.props
 
     return (
@@ -25,25 +57,77 @@ class RegisterInfomation extends React.Component {
           <Space>
             <Row>
               <Bullet />
-              <FontAuth.H2>Register Infomation</FontAuth.H2>
+              <FontAuth.H2>Register information</FontAuth.H2>
             </Row>
             <Space pdleft={23} pdright={23} pdbottom={8}>
-              <Input placeholder="Full Name" />
-              <Input placeholder="Nickname" />
-              <Input placeholder="Email" autoCapitalize="none" />
-              <Input placeholder="Password" secureTextEntry />
+              <Input
+                ref={input => {
+                  this.fullNameInput = input
+                }}
+                placeholder="Full Name"
+                autoCapitalize="none"
+                onChangeText={text => this.handleInput(text, 'fullName')}
+                value={fullName}
+              />
+              <Input
+                ref={input => {
+                  this.emailInput = input
+                }}
+                placeholder="Email"
+                autoCapitalize="none"
+                onChangeText={text => this.handleInput(text, 'email')}
+                value={email}
+              />
+              <Input
+                ref={input => {
+                  this.usernameInput = input
+                }}
+                placeholder="Username"
+                autoCapitalize="none"
+                onChangeText={text => this.handleInput(text, 'username')}
+                value={username}
+              />
+              <Input
+                ref={input => {
+                  this.passwordInput = input
+                }}
+                placeholder="Password"
+                autoCapitalize="none"
+                secureTextEntry
+                onChangeText={text => this.handleInput(text, 'password')}
+                value={password}
+              />
             </Space>
           </Space>
 
           <Space>
             <Row>
               <Bullet />
-              <FontAuth.H2>Personal Infomation</FontAuth.H2>
+              <FontAuth.H2>Personal information</FontAuth.H2>
             </Row>
             <Space pdleft={23} pdright={23} pdbottom={14}>
-              <Input placeholder="Employer ID" />
-              <Input placeholder="Mobile Phone" />
-              <Input placeholder="Section" />
+              <Input
+                ref={input => {
+                  this.empIdInput = input
+                }}
+                placeholder="Employer ID"
+                autoCapitalize="none"
+                onChangeText={text => this.handleInput(text, 'empId')}
+                value={empId}
+              />
+              <Input
+                ref={input => {
+                  this.mobileInput = input
+                }}
+                placeholder="Mobile Phone"
+                autoCapitalize="none"
+                onChangeText={text => this.handleInput(text, 'mobile')}
+                value={mobile}
+              />
+              <SelectSections
+                sectionSelected={sectionSelected}
+                updateSection={this.updateSection}
+              />
             </Space>
           </Space>
 
@@ -58,7 +142,51 @@ class RegisterInfomation extends React.Component {
 
           <Space pdtop={20}>
             <Segment.Center flex={1}>
-              <Button onPress={() => navigation.navigate('RegisterSuccess')}>
+              <Button
+                onPress={async () => {
+                  const information = {
+                    fullName,
+                    email,
+                    username,
+                    password,
+                    empId,
+                    mobile,
+                    sectionSelected
+                  }
+
+                  const keyInformation = Object.keys(information)
+
+                  const validateInfo = keyInformation.reverse().map(info => {
+                    if (info === 'sectionSelected') {
+                      return true
+                    }
+
+                    if (
+                      information[info] === null ||
+                      information[info].trim() === ''
+                    ) {
+                      this[`${info}Input`].focus()
+                      return false
+                    }
+
+                    return true
+                  })
+
+                  if (
+                    validateInfo.indexOf(false) !== -1 ||
+                    information.sectionSelected === null
+                  )
+                    return
+
+                  const response = await apiRegister(information)
+
+                  if (response.data === '') {
+                    navigation.navigate('RegisterSuccess')
+                  }
+
+                  return
+                }}
+              >
                 Sign Up
               </Button>
             </Segment.Center>
@@ -100,7 +228,7 @@ const RegisterSuccess = props => {
 }
 
 const Register = {
-  Info: RegisterInfomation,
+  Info: RegisterInformation,
   Success: RegisterSuccess
 }
 

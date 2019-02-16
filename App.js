@@ -14,14 +14,23 @@ import {
   headerBackImage,
   HeaderDrawerButton
 } from './containers'
-import { Login, Register, ForgotPassword, Home } from './screens'
+import {
+  AuthLoadingScreen,
+  Login,
+  Register,
+  ForgotPassword,
+  TasksNewJob,
+  TasksJobAssigned,
+  TasksJobProcess,
+  TasksCompleted
+} from './screens'
 
 const titleTopbar = {
   register: 'Create an Account',
   forgot_pass: 'Forgot Password'
 }
 
-const AuthNavigator = createStackNavigator(
+const AuthStack = createStackNavigator(
   {
     Login: {
       screen: Login
@@ -48,7 +57,8 @@ const AuthNavigator = createStackNavigator(
     ForgotPasswordSuccess: {
       screen: ForgotPassword.Success,
       navigationOptions: {
-        title: titleTopbar.forgot_pass
+        title: titleTopbar.forgot_pass,
+        headerLeft: null
       }
     }
   },
@@ -65,34 +75,78 @@ const AuthNavigator = createStackNavigator(
   }
 )
 
-const MainNavigatorWithDrawer = createDrawerNavigator(
+const defaultNavigationOptions = ({ navigation }) => ({
+  headerStyle,
+  headerTitleStyle,
+  headerLeftContainerStyle,
+  headerRightContainerStyle,
+  headerBackTitle: null,
+  headerBackImage,
+  headerRight: <HeaderDrawerButton navigation={navigation} />
+})
+
+const AppStackWithDrawer = createDrawerNavigator(
   {
-    MainNavigator: {
-      screen: createStackNavigator(
+    AppStack: createSwitchNavigator({
+      TasksNewJob: createStackNavigator(
         {
-          Home: {
-            screen: Home,
+          TasksNewJob: {
+            screen: TasksNewJob,
             navigationOptions: {
-              title: 'All'
+              title: 'New Job'
             }
           }
         },
         {
-          initialRouteName: 'Home',
-          defaultNavigationOptions: ({ navigation }) => ({
-            headerStyle,
-            headerTitleStyle,
-            headerLeftContainerStyle,
-            headerRightContainerStyle,
-            headerBackTitle: null,
-            headerBackImage,
-            headerRight: <HeaderDrawerButton navigation={navigation} />
-          })
+          defaultNavigationOptions
+        }
+      ),
+
+      TasksJobAssigned: createStackNavigator(
+        {
+          TasksJobAssigned: {
+            screen: TasksJobAssigned,
+            navigationOptions: {
+              title: 'Job Assigned'
+            }
+          }
+        },
+        {
+          defaultNavigationOptions
+        }
+      ),
+
+      TasksJobProcess: createStackNavigator(
+        {
+          TasksJobProcess: {
+            screen: TasksJobProcess,
+            navigationOptions: {
+              title: 'Job Process'
+            }
+          }
+        },
+        {
+          defaultNavigationOptions
+        }
+      ),
+
+      TasksCompleted: createStackNavigator(
+        {
+          TasksCompleted: {
+            screen: TasksCompleted,
+            navigationOptions: {
+              title: 'Completed'
+            }
+          }
+        },
+        {
+          defaultNavigationOptions
         }
       )
-    }
+    })
   },
   {
+    initialRouteName: 'AppStack',
     contentComponent: DrawerCustom
   }
 )
@@ -100,15 +154,22 @@ const MainNavigatorWithDrawer = createDrawerNavigator(
 const AppContainer = createAppContainer(
   createSwitchNavigator(
     {
+      AuthLoading: createStackNavigator({
+        AuthLoading: {
+          screen: AuthLoadingScreen
+          // navigationOptions: {
+          //   header: null
+          // }
+        }
+      }),
       Auth: {
-        screen: AuthNavigator
+        screen: AuthStack
       },
-      App: {
-        screen: MainNavigatorWithDrawer
-      }
+
+      App: { screen: AppStackWithDrawer }
     },
     {
-      initialRouteName: 'Auth'
+      initialRouteName: 'AuthLoading'
     }
   )
 )

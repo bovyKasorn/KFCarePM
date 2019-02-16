@@ -1,26 +1,34 @@
 import React, { Component } from 'react'
 import { Image } from 'react-native'
-import { Font, Segment, Space, Row, Divider, Bullet } from '../components'
+import {
+  Font,
+  Segment,
+  Space,
+  Row,
+  Divider,
+  Bullet,
+  Button
+} from '../components'
 import { normalize } from '../utilities'
 
-class JobCard extends Component {
+class TasksDetail extends Component {
   render() {
+    const { detail } = this.props
+
+    console.log('detail :', detail)
+
     return (
       <Space>
-        {/* <Segment.Center> */}
         <Space pdleft={8} pdtop={6}>
           <Font.H1>Machine Name 1</Font.H1>
         </Space>
-        {/* </Segment.Center> */}
 
         <Space pdtop={8}>
-          {/* <Row> */}
           <Image
             flex={1}
             style={{ height: normalize(180) }}
             source={{
-              uri:
-                'https://amp.businessinsider.com/images/5b86ba9e1982d88a308b4aa0-750-563.jpg'
+              uri: detail.ImageUrl
             }}
             resizeMode="cover"
           />
@@ -62,7 +70,6 @@ class JobCard extends Component {
               </Font.H3>
             </Space>
           </Space>
-          {/* </Row> */}
         </Space>
 
         <Space pdleft={20} pdright={20} pdtop={18}>
@@ -113,6 +120,10 @@ class JobCard extends Component {
                   typesetting industry.
                 </Font.H2>
               </Space>
+
+              <Space pdtop={16}>
+                <Button small={1}>Detail</Button>
+              </Space>
             </Space>
 
             <Divider.Horizontal />
@@ -123,4 +134,4 @@ class JobCard extends Component {
   }
 }
 
-export { JobCard }
+export { TasksDetail }

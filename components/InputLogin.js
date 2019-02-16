@@ -1,7 +1,5 @@
-import React from 'react'
 import { TextInput } from 'react-native'
 import styled from 'styled-components'
-import maintheme from '../theme'
 import { normalize } from '../utilities'
 
 const input_login = {
@@ -45,20 +43,9 @@ const LoginPassword = styled(TextInput)`
   color: ${props => props.theme.color.input_login.font};
 `
 
-const InputLogin = props => {
-  return props.password ? (
-    <LoginPassword
-      {...props}
-      secureTextEntry
-      placeholderTextColor={maintheme.color.input_login.placeholder}
-    />
-  ) : (
-    <LoginEmail
-      {...props}
-      autoCapitalize="none"
-      placeholderTextColor={maintheme.color.input_login.placeholder}
-    />
-  )
+const InputLogin = {
+  Email: LoginEmail,
+  Password: LoginPassword
 }
 
 export { InputLogin }

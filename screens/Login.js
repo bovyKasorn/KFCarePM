@@ -2,7 +2,8 @@ import React from 'react'
 import { Text, Image, TouchableHighlight } from 'react-native'
 import styled from 'styled-components'
 import { Button, InputLogin, Container, Segment, Space } from '../components'
-import { normalize } from '../utilities'
+import maintheme from '../theme'
+import apiLogin from '../api/Login'
 
 const LoginBackground = styled(Image)`
   position: absolute;
@@ -44,7 +45,20 @@ class Login extends React.Component {
     }
   }
 
+  constructor(props) {
+    super(props)
+    this.state = {
+      username: null,
+      password: null
+    }
+  }
+
+  handleInput = (text, name) => {
+    this.setState({ [name]: text })
+  }
+
   render() {
+    const { username, password } = this.state
     const { navigation } = this.props
 
     return (
@@ -59,13 +73,62 @@ class Login extends React.Component {
         </Segment.Center>
 
         <Segment.Center flex={1}>
-          <InputLogin placeholder="Email" />
-          <InputLogin password placeholder="Password" />
+          <InputLogin.Email
+            placeholderTextColor={maintheme.color.input_login.placeholder}
+            placeholder="Username"
+            ref={input => {
+              this.usernameInput = input
+            }}
+            autoCapitalize="none"
+            onChangeText={text => this.handleInput(text, 'username')}
+            value={username}
+          />
+          <InputLogin.Password
+            placeholderTextColor={maintheme.color.input_login.placeholder}
+            secureTextEntry
+            placeholder="Password"
+            ref={input => {
+              this.passwordInput = input
+            }}
+            onChangeText={text => this.handleInput(text, 'password')}
+            value={password}
+          />
         </Segment.Center>
 
         <Segment.Center flex={1}>
           <Space pdtop={24}>
-            <Button onPress={() => navigation.navigate('Home')}>Sign In</Button>
+            <Button
+              onPress={async () => {
+                const information = {
+                  username,
+                  password
+                }
+
+                const keyInformation = Object.keys(information)
+
+                const validateInfo = keyInformation.reverse().map(info => {
+                  if (
+                    information[info] === null ||
+                    information[info].trim() === ''
+                  ) {
+                    this[`${info}Input`].focus()
+                    return false
+                  }
+
+                  return true
+                })
+
+                if (validateInfo.indexOf(false) !== -1) return
+
+                const response = await apiLogin(information)
+
+                if (response.data.access_token) {
+                  navigation.navigate('App')
+                }
+              }}
+            >
+              Sign In
+            </Button>
             <Space pdtop={24}>
               <TextLink navigation={navigation}>Forget Password?</TextLink>
             </Space>

@@ -50,7 +50,7 @@ class KeyboardAvoidAndScroll extends Component {
 
   render() {
     const { keyboardOpen, screenHeight } = this.state
-    const scrollEnabled = screenHeight > height || keyboardOpen
+    const scrollEnabled = screenHeight >= height - Header.HEIGHT || keyboardOpen
 
     return (
       <KeyboardAvoidingView

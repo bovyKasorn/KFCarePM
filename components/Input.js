@@ -1,10 +1,8 @@
-import React from 'react'
 import { TextInput } from 'react-native'
 import styled from 'styled-components'
-import maintheme from '../theme'
 import { normalize } from '../utilities'
 
-const FormInput = styled(TextInput)`
+const Input = styled(TextInput)`
   border-width: 1;
   border-color: ${props => props.theme.color.input.border};
   border-radius: 4;
@@ -15,12 +13,5 @@ const FormInput = styled(TextInput)`
   margin-top: ${normalize(4)};
   margin-bottom: ${normalize(4)};
 `
-
-const Input = props => (
-  <FormInput
-    {...props}
-    placeholderTextColor={maintheme.color.input.placeholder}
-  />
-)
 
 export { Input }

@@ -12,8 +12,20 @@ import {
 import { normalize } from '../utilities'
 import apiForgotPassword from '../api/ForgotPassword'
 
-class ForgotPasswordInfomation extends React.Component {
+class ForgotPasswordInformation extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      email: null
+    }
+  }
+
+  handleEmailInput = text => {
+    this.setState({ email: text })
+  }
+
   render() {
+    const { email } = this.state
     const { navigation } = this.props
 
     return (
@@ -31,13 +43,25 @@ class ForgotPasswordInfomation extends React.Component {
           </Space>
 
           <Space width="90%" pdtop={14}>
-            <Input placeholder="Email" autoCapitalize="none" />
+            <Input
+              ref={input => {
+                this.emailInput = input
+              }}
+              placeholder="Email"
+              autoCapitalize="none"
+              onChangeText={this.handleEmailInput}
+            />
           </Space>
 
           <Space pdtop={14}>
             <Button
               onPress={async () => {
-                const response = await apiForgotPassword()
+                if (email === null || email.trim() === '') {
+                  this.emailInput.focus()
+                  return
+                }
+
+                const response = await apiForgotPassword(email)
 
                 if (response.data === '') {
                   navigation.navigate('ForgotPasswordSuccess')
@@ -88,7 +112,7 @@ const ForgotPasswordSuccess = props => {
 }
 
 const ForgotPassword = {
-  Info: ForgotPasswordInfomation,
+  Info: ForgotPasswordInformation,
   Success: ForgotPasswordSuccess
 }
 

@@ -2,14 +2,31 @@ import { Alert } from 'react-native'
 import axios from 'axios'
 import Environment from '../Environment'
 
-export default async function apiForgotPassword(email) {
+export default async function apiRegister(info) {
   try {
+    const {
+      fullName,
+      email,
+      username,
+      password,
+      empId,
+      mobile,
+      sectionSelected
+    } = info
+
     const data = {
-      Email: email
+      PrefixID: 1,
+      FullName: fullName,
+      Email: email,
+      Username: username,
+      Password: password,
+      StaffID: empId,
+      Mobile: mobile,
+      SectionID: sectionSelected
     }
 
     let response = await axios.post(
-      `${Environment.API_ENDPOINT}/api/account/forgetpassword`,
+      `${Environment.API_ENDPOINT}/api/account/register`,
       JSON.stringify(data),
       {
         headers: {
@@ -24,7 +41,7 @@ export default async function apiForgotPassword(email) {
     Alert.alert(
       '',
       error.response.data.ModelState
-        ? error.response.data.ModelState['Email.Email'][0]
+        ? error.response.data.ModelState['user.Email'][0]
         : error.response.data,
       [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
       { cancelable: false }

@@ -12,8 +12,7 @@ const mainTheme = {
     },
 
     input: {
-      border: '#DFDFDF',
-      placeholder: '#CFCFCF'
+      border: '#DFDFDF'
     },
 
     button: {
@@ -43,7 +42,18 @@ const mainTheme = {
 
     textlink: '#015151',
 
-    divider: '#DFDFDF'
+    divider: '#DFDFDF',
+
+    modal: {
+      bg: 'rgba(0,0,0,0.8)'
+    },
+
+    noti: {
+      bg: {
+        primary: '#D0103A',
+        secondary: '#616161'
+      }
+    }
   }
 }
 

@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
-import { Picker, Platform } from 'react-native'
+import { Picker, Platform, Alert } from 'react-native'
+import { CheckBox } from 'react-native-elements'
 import { StackActions, NavigationActions } from 'react-navigation'
+import styled from 'styled-components'
 import {
   Container,
   Row,
@@ -20,20 +22,44 @@ import {
   TaskAddImage
 } from '../containers'
 import { apiGetTasksDetails } from '../api/getTasks'
+import { apiSaveTasksDetails } from '../api/SaveTask'
+import { normalize } from '../utilities'
+
+const ListCheckboxSpace = styled(Space)`
+  flex-grow: 1;
+  flex-shrink: 0;
+  flex-basis: 49%;
+`
+
+const CheckBoxCustom = props => {
+  return (
+    <CheckBox
+      {...props}
+      checkedColor="green"
+      containerStyle={{
+        backgroundColor: '#ffffff',
+        borderWidth: 0,
+        padding: 0,
+        margin: 0
+      }}
+      textStyle={{
+        fontSize: normalize(12),
+        fontWeight: '400'
+      }}
+    />
+  )
+}
 
 class ProcessTask extends Component {
   constructor(props) {
     super(props)
-
-    const TaskId = props.navigation.getParam('TaskId')
 
     this.state = {
       taskDetails: {},
       results: [],
       statusSelected: Platform.OS === 'android' ? 0 : null,
       addImage: false,
-      imageBefore: [{ TaskID: TaskId, Comment: '', ImageBase64: null }],
-      imageAfter: [{ TaskID: TaskId, Comment: '', ImageBase64: null }]
+      completed: false
     }
   }
 
@@ -69,12 +95,75 @@ class ProcessTask extends Component {
     this.setState({ results })
   }
 
+  handleCheckbox = (name, id) => {
+    const { results } = this.state
+
+    const resultIndex = results.findIndex(result => result.ResultID === id)
+
+    if (resultIndex === -1) {
+      results.push({
+        ResultID: id,
+        Result: [{ CheckBoxName: name }],
+        Comment: ''
+      })
+    } else {
+      const checkedIndex = results[resultIndex].Result.findIndex(
+        checked => checked.CheckBoxName === name
+      )
+
+      if (checkedIndex === -1) {
+        results[resultIndex].Result.push({ CheckBoxName: name })
+      } else {
+        results[resultIndex].Result.splice(checkedIndex, 1)
+      }
+    }
+
+    this.setState({ results })
+  }
+
   handleAddImageStatus = status => {
     this.setState({ addImage: status })
   }
 
+  submitTask = async () => {
+    const { statusSelected, results, completed } = this.state
+
+    const { navigation } = this.props
+
+    const TaskId = navigation.getParam('TaskId')
+
+    if (statusSelected === null) {
+      Alert.alert(
+        '',
+        'Please select status.',
+        [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
+        { cancelable: false }
+      )
+
+      return
+    }
+
+    const data = {
+      TaskID: TaskId,
+      Comment: '',
+      Status: statusSelected,
+      ClassLevel: completed ? 3 : 2,
+      Results: results
+    }
+
+    const response = await apiSaveTasksDetails(data)
+
+    console.log('response :', response)
+  }
+
   render() {
-    const { taskDetails, statusSelected, addImage } = this.state
+    const {
+      taskDetails,
+      statusSelected,
+      results,
+      addImage,
+      completed
+    } = this.state
 
     const { navigation } = this.props
 
@@ -90,6 +179,10 @@ class ProcessTask extends Component {
               </Row>
 
               {detail.Results.map((result, order) => {
+                const resultIndex = results.findIndex(
+                  rs => rs.ResultID === result.ResultID
+                )
+
                 switch (result.ResultTypeID) {
                   case 0:
                     return (
@@ -99,6 +192,9 @@ class ProcessTask extends Component {
                         placeholder={result.ChecklistName}
                         onChangeText={text =>
                           this.handleInput(text, result.ResultID)
+                        }
+                        value={
+                          resultIndex !== -1 ? results[resultIndex].Result : ''
                         }
                       />
                     )
@@ -112,11 +208,12 @@ class ProcessTask extends Component {
                         onChangeText={text =>
                           this.handleInput(text, result.ResultID)
                         }
+                        value={
+                          resultIndex !== -1 ? results[resultIndex].Result : ''
+                        }
                       />
                     )
                   case 2:
-                    const { results } = this.state
-
                     Platform.OS === 'android'
                       ? results.push({
                           ResultID: result.ResultID,
@@ -125,15 +222,11 @@ class ProcessTask extends Component {
                         })
                       : null
 
-                    const selectIndex = results.findIndex(
-                      rs => rs.ResultID === result.ResultID
-                    )
-
                     const labelSelected =
                       Platform.OS === 'android'
                         ? ''
-                        : selectIndex !== -1
-                        ? results[selectIndex].Result
+                        : resultIndex !== -1
+                        ? results[resultIndex].Result
                         : ''
 
                     return (
@@ -158,8 +251,53 @@ class ProcessTask extends Component {
                       </Select>
                     )
                   case 3:
-                    console.log('Checkbox')
-                    break
+                    let checkedList = []
+
+                    if (resultIndex !== -1) {
+                      checkedList = results[resultIndex].Result
+                    }
+
+                    const checkCheckedList = checkName => {
+                      return checkedList.findIndex(
+                        check => check.CheckBoxName === checkName
+                      )
+                    }
+
+                    return (
+                      <Space key={order} pdtop={8} pdleft={6}>
+                        <Font.H2 primary={1}>{result.ChecklistName}</Font.H2>
+                        <Space pdleft={14}>
+                          <Row flexWrap="wrap">
+                            {result.TypeOptions.map((option, index) => {
+                              return (
+                                <ListCheckboxSpace
+                                  key={index}
+                                  pdtop={4}
+                                  pdbottom={4}
+                                >
+                                  <CheckBoxCustom
+                                    title={option.OptionName}
+                                    checkedColor="green"
+                                    checked={
+                                      checkCheckedList(option.OptionName) !== -1
+                                        ? true
+                                        : false
+                                    }
+                                    onPress={() =>
+                                      this.handleCheckbox(
+                                        option.OptionName,
+                                        result.ResultID
+                                      )
+                                    }
+                                  />
+                                </ListCheckboxSpace>
+                              )
+                            })}
+                          </Row>
+                        </Space>
+                      </Space>
+                    )
+
                   default:
                     break
                 }
@@ -169,7 +307,7 @@ class ProcessTask extends Component {
         })
       : null
 
-    console.log('this.state.results :', this.state.results)
+    console.log('results :', results)
 
     return (
       <KeyboardAvoidAndScroll>
@@ -191,14 +329,40 @@ class ProcessTask extends Component {
 
               <Space pdtop={8}>{taskDetail}</Space>
 
-              <Space>
+              <Space pdtop={12} pdbottom={14}>
                 <Segment.Center>
                   <Button
+                    small={1}
                     onPress={() => {
                       this.handleAddImageStatus(true)
                     }}
                   >
                     Add Image
+                  </Button>
+                </Segment.Center>
+              </Space>
+
+              <Divider.Horizontal />
+
+              <Space pdtop={12}>
+                <Segment.Center>
+                  <CheckBoxCustom
+                    title="Complete"
+                    checkedColor="green"
+                    checked={completed}
+                    onPress={() => this.setState({ completed: !completed })}
+                  />
+                </Segment.Center>
+              </Space>
+
+              <Space pdtop={8}>
+                <Segment.Center>
+                  <Button
+                    onPress={() => {
+                      this.submitTask()
+                    }}
+                  >
+                    Save
                   </Button>
                 </Segment.Center>
               </Space>

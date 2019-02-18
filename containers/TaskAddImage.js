@@ -33,8 +33,8 @@ const ButtonText = styled(Text)`
 const TextArea = styled(Input)`
   padding-top: ${normalize(2)};
   padding-bottom: ${normalize(2)};
-  padding-left: ${normalize(4)};
-  padding-right: ${normalize(4)};
+  padding-left: ${normalize(6)};
+  padding-right: ${normalize(6)};
   margin-top: 0;
   margin-bottom: 0;
 `
@@ -58,6 +58,7 @@ const ListImageSpace = styled(Space)`
 const ListImage = styled(Image)`
   width: 100%;
   height: 100%;
+  background-color: #dfdfdf;
 `
 
 class TaskAddImage extends Component {

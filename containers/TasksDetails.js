@@ -37,6 +37,9 @@ class TasksDetails extends Component {
       case 'process':
         this.navigateWithTaskID('ProcessTask')
         break
+      case 'completed':
+        this.navigateWithTaskID('TasksCompleteDetails')
+        break
       default:
         break
     }

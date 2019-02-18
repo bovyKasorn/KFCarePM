@@ -25,7 +25,8 @@ import {
   AcceptTask,
   TasksJobProcess,
   ProcessTask,
-  TasksCompleted
+  TasksCompleted,
+  TasksCompleteDetails
 } from './screens'
 
 const titleTopbar = {
@@ -85,7 +86,7 @@ const defaultNavigationOptions = ({ navigation }) => ({
   headerRightContainerStyle,
   headerBackTitle: null,
   headerBackImage,
-  headerRight: <HeaderDrawerButton navigation={navigation} />
+  // headerRight: <HeaderDrawerButton navigation={navigation} />
 })
 
 const TasksNewJobStack = createStackNavigator(
@@ -158,6 +159,13 @@ const TasksCompletedStack = createStackNavigator(
       navigationOptions: {
         title: 'Completed'
       }
+    },
+
+    TasksCompleteDetails: {
+      screen: TasksCompleteDetails,
+      navigationOptions: {
+        title: 'Completed'
+      }
     }
   },
   {
@@ -165,7 +173,23 @@ const TasksCompletedStack = createStackNavigator(
   }
 )
 
-const AppStackWithDrawer = createDrawerNavigator(
+// const AppStackWithDrawer = createDrawerNavigator(
+//   {
+//     TasksNewJob: TasksNewJobStack,
+
+//     TasksJobAssigned: TasksJobAssignedStack,
+
+//     TasksJobProcess: TasksJobProcessStack,
+
+//     TasksCompleted: TasksCompletedStack
+//   },
+//   {
+//     initialRouteName: 'TasksNewJob',
+//     contentComponent: DrawerCustom
+//   }
+// )
+
+const AppStackWithDrawer = createSwitchNavigator(
   {
     TasksNewJob: TasksNewJobStack,
 
@@ -176,8 +200,7 @@ const AppStackWithDrawer = createDrawerNavigator(
     TasksCompleted: TasksCompletedStack
   },
   {
-    initialRouteName: 'TasksNewJob',
-    contentComponent: DrawerCustom
+    initialRouteName: 'TasksNewJob'
   }
 )
 

@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Modal, Picker, Platform } from 'react-native'
 import styled from 'styled-components'
-import { Input, Space } from '../components'
+import { Input, Space, Font } from '../components'
 
 const SelectSectionsContainer = styled(Space)`
   flex-direction: row;
@@ -55,7 +55,13 @@ class Select extends Component {
     return (
       <Space flex={1}>
         {Platform.OS === 'android' ? (
-          picker
+          <Space pdtop={8}>
+            <Space pdleft={6}>
+              <Font.H2 primary={1}>{placeholder}</Font.H2>
+            </Space>
+
+            {picker}
+          </Space>
         ) : (
           <Space>
             <Modal

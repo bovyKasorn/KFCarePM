@@ -24,7 +24,9 @@ const mainTheme = {
         color: '#D0103A',
         active: '#C0003A'
       },
-      text: '#FFFFFF'
+      text: '#FFFFFF',
+      bgtab: '#FFFFFF',
+      border: '#DFDFDF'
     },
 
     font: {

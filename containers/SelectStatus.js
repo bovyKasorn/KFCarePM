@@ -29,7 +29,7 @@ class SelectStatus extends Component {
 
     return (
       <Select
-        placeholder="Section"
+        placeholder="Status"
         labelSelected={labelSelected}
         valueSelected={statusSelected}
         handleValueSelected={handleSelectStatus}

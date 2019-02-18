@@ -4,7 +4,7 @@ import axios from 'axios'
 import qs from 'qs'
 import Environment from '../Environment'
 
-export default async function apiLogin(info) {
+export async function apiLogin(info) {
   try {
     const { username, password } = info
 
@@ -36,7 +36,7 @@ export default async function apiLogin(info) {
   } catch (error) {
     Alert.alert(
       '',
-      error.response.data.error_description,
+      error.response.data.error_description || 'Error',
       [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
       { cancelable: false }
     )

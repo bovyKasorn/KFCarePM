@@ -1,5 +1,11 @@
 import React, { Component } from 'react'
-import { View, Text, TouchableHighlight, Image } from 'react-native'
+import {
+  View,
+  Text,
+  TouchableHighlight,
+  Image,
+  AsyncStorage
+} from 'react-native'
 import { DrawerItems } from 'react-navigation'
 import styled from 'styled-components'
 import { Container, Space } from '../components'
@@ -31,8 +37,13 @@ class DrawerCustom extends Component {
           source={require('../assets/images/bgMenu.png')}
           resizeMode="contain"
         />
-        <TouchableHighlight onPress={() => navigation.goBack()}>
-          <Text style={{ color: '#ffffff' }}>Drawer</Text>
+        <TouchableHighlight
+          onPress={() => {
+            AsyncStorage.removeItem('@token')
+            navigation.navigate('Auth')
+          }}
+        >
+          <Text style={{ color: '#ffffff' }}>Sign out</Text>
         </TouchableHighlight>
         <DrawerItems {...this.props} />
       </Space>

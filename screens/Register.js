@@ -14,7 +14,8 @@ import {
 } from '../components'
 import { KeyboardAvoidAndScroll, SelectSections } from '../containers'
 import { normalize } from '../utilities'
-import apiRegister from '../api/Register'
+import { apiRegister } from '../api/Register'
+import { apiGetSections } from '../api/getSections'
 
 class RegisterInformation extends React.Component {
   constructor(props) {
@@ -26,15 +27,26 @@ class RegisterInformation extends React.Component {
       password: null,
       empId: null,
       mobile: null,
+      sections: [],
       sectionSelected: Platform.OS === 'android' ? 1 : null
     }
+  }
+
+  componentDidMount() {
+    apiGetSections().then(res => {
+      this.setState({
+        sections: res.data,
+        sectionSelected:
+          Platform.OS === 'android' ? res.data[0].SectionID : null
+      })
+    })
   }
 
   handleInput = (text, name) => {
     this.setState({ [name]: text })
   }
 
-  updateSection = section => {
+  handleSelectSections = section => {
     this.setState({ sectionSelected: section })
   }
 
@@ -46,6 +58,7 @@ class RegisterInformation extends React.Component {
       password,
       empId,
       mobile,
+      sections,
       sectionSelected
     } = this.state
 
@@ -92,7 +105,6 @@ class RegisterInformation extends React.Component {
                   this.passwordInput = input
                 }}
                 placeholder="Password"
-                autoCapitalize="none"
                 secureTextEntry
                 onChangeText={text => this.handleInput(text, 'password')}
                 value={password}
@@ -125,8 +137,9 @@ class RegisterInformation extends React.Component {
                 value={mobile}
               />
               <SelectSections
+                sections={sections}
                 sectionSelected={sectionSelected}
-                updateSection={this.updateSection}
+                handleSelectSections={this.handleSelectSections}
               />
             </Space>
           </Space>

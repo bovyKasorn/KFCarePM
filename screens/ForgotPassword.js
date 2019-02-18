@@ -10,7 +10,7 @@ import {
   Space
 } from '../components'
 import { normalize } from '../utilities'
-import apiForgotPassword from '../api/ForgotPassword'
+import { apiForgotPassword } from '../api/ForgotPassword'
 
 class ForgotPasswordInformation extends React.Component {
   constructor(props) {

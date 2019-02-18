@@ -20,8 +20,11 @@ import {
   Register,
   ForgotPassword,
   TasksNewJob,
+  AssignedTechnicians,
   TasksJobAssigned,
+  AcceptTask,
   TasksJobProcess,
+  ProcessTask,
   TasksCompleted
 } from './screens'
 
@@ -85,83 +88,112 @@ const defaultNavigationOptions = ({ navigation }) => ({
   headerRight: <HeaderDrawerButton navigation={navigation} />
 })
 
-const AppStackWithDrawer = createDrawerNavigator(
+const TasksNewJobStack = createStackNavigator(
   {
-    AppStack: createSwitchNavigator({
-      TasksNewJob: createStackNavigator(
-        {
-          TasksNewJob: {
-            screen: TasksNewJob,
-            navigationOptions: {
-              title: 'New Job'
-            }
-          }
-        },
-        {
-          defaultNavigationOptions
-        }
-      ),
+    TasksNewJob: {
+      screen: TasksNewJob,
+      navigationOptions: {
+        title: 'New Job'
+      }
+    },
 
-      TasksJobAssigned: createStackNavigator(
-        {
-          TasksJobAssigned: {
-            screen: TasksJobAssigned,
-            navigationOptions: {
-              title: 'Job Assigned'
-            }
-          }
-        },
-        {
-          defaultNavigationOptions
-        }
-      ),
-
-      TasksJobProcess: createStackNavigator(
-        {
-          TasksJobProcess: {
-            screen: TasksJobProcess,
-            navigationOptions: {
-              title: 'Job Process'
-            }
-          }
-        },
-        {
-          defaultNavigationOptions
-        }
-      ),
-
-      TasksCompleted: createStackNavigator(
-        {
-          TasksCompleted: {
-            screen: TasksCompleted,
-            navigationOptions: {
-              title: 'Completed'
-            }
-          }
-        },
-        {
-          defaultNavigationOptions
-        }
-      )
-    })
+    AssignedTechnicians: {
+      screen: AssignedTechnicians,
+      navigationOptions: {
+        title: 'Assigned'
+      }
+    }
   },
   {
-    initialRouteName: 'AppStack',
+    defaultNavigationOptions
+  }
+)
+
+const TasksJobAssignedStack = createStackNavigator(
+  {
+    TasksJobAssigned: {
+      screen: TasksJobAssigned,
+      navigationOptions: {
+        title: 'Job Assigned'
+      }
+    },
+
+    AcceptTask: {
+      screen: AcceptTask,
+      navigationOptions: {
+        title: 'Accept'
+      }
+    }
+  },
+  {
+    defaultNavigationOptions
+  }
+)
+
+const TasksJobProcessStack = createStackNavigator(
+  {
+    TasksJobProcess: {
+      screen: TasksJobProcess,
+      navigationOptions: {
+        title: 'Job Process'
+      }
+    },
+
+    ProcessTask: {
+      screen: ProcessTask,
+      navigationOptions: {
+        title: 'Job Process'
+      }
+    }
+  },
+  {
+    defaultNavigationOptions
+  }
+)
+
+const TasksCompletedStack = createStackNavigator(
+  {
+    TasksCompleted: {
+      screen: TasksCompleted,
+      navigationOptions: {
+        title: 'Completed'
+      }
+    }
+  },
+  {
+    defaultNavigationOptions
+  }
+)
+
+const AppStackWithDrawer = createDrawerNavigator(
+  {
+    TasksNewJob: TasksNewJobStack,
+
+    TasksJobAssigned: TasksJobAssignedStack,
+
+    TasksJobProcess: TasksJobProcessStack,
+
+    TasksCompleted: TasksCompletedStack
+  },
+  {
+    initialRouteName: 'TasksNewJob',
     contentComponent: DrawerCustom
   }
 )
 
+const AuthLoadingStack = createStackNavigator({
+  AuthLoading: {
+    screen: AuthLoadingScreen
+    // navigationOptions: {
+    //   header: null
+    // }
+  }
+})
+
 const AppContainer = createAppContainer(
   createSwitchNavigator(
     {
-      AuthLoading: createStackNavigator({
-        AuthLoading: {
-          screen: AuthLoadingScreen
-          // navigationOptions: {
-          //   header: null
-          // }
-        }
-      }),
+      AuthLoading: AuthLoadingStack,
       Auth: {
         screen: AuthStack
       },

@@ -2,7 +2,7 @@ import { Alert } from 'react-native'
 import axios from 'axios'
 import Environment from '../Environment'
 
-export default async function apiForgotPassword(email) {
+export async function apiForgotPassword(email) {
   try {
     const data = {
       Email: email
@@ -24,8 +24,8 @@ export default async function apiForgotPassword(email) {
     Alert.alert(
       '',
       error.response.data.ModelState
-        ? error.response.data.ModelState['Email.Email'][0]
-        : error.response.data,
+        ? error.response.data.ModelState['Email.Email'][0] || 'Error'
+        : error.response.data || 'Error',
       [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
       { cancelable: false }
     )

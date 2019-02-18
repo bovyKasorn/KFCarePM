@@ -7,6 +7,7 @@ import { normalize } from '../utilities'
 const ButtonPrimary = styled(TouchableHighlight)`
   min-width: 45%;
   align-items: center;
+  justify-content: center;
   background-color: ${props =>
     props.secondary === 1
       ? props.theme.color.button.secondary.color

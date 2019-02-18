@@ -5,7 +5,10 @@ import { normalize } from '../utilities'
 const H1 = styled(Text)`
   font-size: ${normalize(16)};
   font-weight: 600;
-  color: ${props => props.theme.color.font.secondary};
+  color: ${props =>
+    props.primary === 1
+      ? props.theme.color.font.secondary
+      : props.theme.color.font.grey};
 `
 
 const H2 = styled(Text)`

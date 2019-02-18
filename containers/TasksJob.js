@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
-import ImagePicker from 'react-native-image-picker'
-import { KeyboardAvoidAndScroll, TasksDetail, TopMenu } from '../containers'
+import { KeyboardAvoidAndScroll, TasksDetails, TopMenu } from '../containers'
 import { Container, Space } from '../components'
 import {
   apiGetTasksNewJob,
@@ -10,12 +9,20 @@ import {
 } from '../api/getTasks'
 
 const TasksLists = props => {
+  const { tasksActive, navigation } = props
   const tasksLists = props.tasksLists === '' ? [] : props.tasksLists
 
   return (
     <Space>
-      {tasksLists.map((detail, index) => {
-        return <TasksDetail key={index} detail={detail} />
+      {tasksLists.map((details, index) => {
+        return (
+          <TasksDetails
+            key={index}
+            navigation={navigation}
+            details={details}
+            tasksActive={tasksActive}
+          />
+        )
       })}
     </Space>
   )
@@ -50,36 +57,6 @@ class TasksJob extends Component {
     })
   }
 
-  // test = () => {
-  //   const options = {
-  //     storageOptions: {
-  //       skipBackup: true,
-  //       path: 'images'
-  //     }
-  //   }
-
-  //   ImagePicker.showImagePicker(options, response => {
-  //     console.log('Response = ', response)
-
-  //     if (response.didCancel) {
-  //       console.log('User cancelled image picker')
-  //     } else if (response.error) {
-  //       console.log('ImagePicker Error: ', response.error)
-  //     } else if (response.customButton) {
-  //       console.log('User tapped custom button: ', response.customButton)
-  //     } else {
-  //       const source = { uri: response.uri }
-
-  //       // You can also display the image using data:
-  //       // const source = { uri: 'data:image/jpeg;base64,' + response.data };
-
-  //       this.setState({
-  //         avatarSource: source
-  //       })
-  //     }
-  //   })
-  // }
-
   render() {
     const {
       tasksNewJobLists,
@@ -94,16 +71,40 @@ class TasksJob extends Component {
 
     switch (tasksActive) {
       case 'new':
-        tasks = <TasksLists tasksLists={tasksNewJobLists} />
+        tasks = (
+          <TasksLists
+            navigation={navigation}
+            tasksLists={tasksNewJobLists}
+            tasksActive={tasksActive}
+          />
+        )
         break
       case 'assigned':
-        tasks = <TasksLists tasksLists={tasksJobAssignedLists} />
+        tasks = (
+          <TasksLists
+            navigation={navigation}
+            tasksLists={tasksJobAssignedLists}
+            tasksActive={tasksActive}
+          />
+        )
         break
       case 'process':
-        tasks = <TasksLists tasksLists={tasksJobProcessLists} />
+        tasks = (
+          <TasksLists
+            navigation={navigation}
+            tasksLists={tasksJobProcessLists}
+            tasksActive={tasksActive}
+          />
+        )
         break
       case 'completed':
-        tasks = <TasksLists tasksLists={tasksCompletedLists} />
+        tasks = (
+          <TasksLists
+            navigation={navigation}
+            tasksLists={tasksCompletedLists}
+            tasksActive={tasksActive}
+          />
+        )
         break
       default:
         break

@@ -3,7 +3,7 @@ import { Text, Image, TouchableHighlight } from 'react-native'
 import styled from 'styled-components'
 import { Button, InputLogin, Container, Segment, Space } from '../components'
 import maintheme from '../theme'
-import apiLogin from '../api/Login'
+import { apiLogin } from '../api/Login'
 
 const LoginBackground = styled(Image)`
   position: absolute;

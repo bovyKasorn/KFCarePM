@@ -2,7 +2,7 @@ import { Alert } from 'react-native'
 import axios from 'axios'
 import Environment from '../Environment'
 
-export default async function apiRegister(info) {
+export async function apiRegister(info) {
   try {
     const {
       fullName,
@@ -41,8 +41,8 @@ export default async function apiRegister(info) {
     Alert.alert(
       '',
       error.response.data.ModelState
-        ? error.response.data.ModelState['user.Email'][0]
-        : error.response.data,
+        ? error.response.data.ModelState['user.Email'][0] || 'Error'
+        : error.response.data || 'Error',
       [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
       { cancelable: false }
     )

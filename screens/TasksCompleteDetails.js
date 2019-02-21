@@ -34,10 +34,16 @@ class TasksCompleteDetails extends Component {
     })
 
     apiGetImagesBefore(TaskId).then(res => {
+      if (res.data.length === 0) {
+        return
+      }
       this.setState({ imageBeforeQuery: res.data })
     })
 
     apiGetImagesAfter(TaskId).then(res => {
+      if (res.data.length === 0) {
+        return
+      }
       this.setState({ imageAfterQuery: res.data })
     })
   }
@@ -94,7 +100,7 @@ class TasksCompleteDetails extends Component {
                       <Space key={index} pdtop={4}>
                         <Row height={100}>
                           <Image
-                            flex={3}
+                            flex={2}
                             backgroundColor="#dfdfdf"
                             height="100%"
                             source={{
@@ -103,7 +109,7 @@ class TasksCompleteDetails extends Component {
                             resizeMode="cover"
                           />
 
-                          <Space flex={5} mgleft={8}>
+                          <Space flex={3} mgleft={8}>
                             <Font.H2>{img.Comment}</Font.H2>
                           </Space>
                         </Row>
@@ -116,7 +122,7 @@ class TasksCompleteDetails extends Component {
                       <Space key={index} pdtop={4}>
                         <Row height={100}>
                           <Image
-                            flex={3}
+                            flex={2}
                             backgroundColor="#dfdfdf"
                             height="100%"
                             source={{
@@ -125,7 +131,7 @@ class TasksCompleteDetails extends Component {
                             resizeMode="cover"
                           />
 
-                          <Space flex={5} mgleft={8}>
+                          <Space flex={3} mgleft={8}>
                             <Font.H2>{img.Comment}</Font.H2>
                           </Space>
                         </Row>

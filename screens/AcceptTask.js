@@ -1,7 +1,11 @@
 import React, { Component } from 'react'
 import { StackActions, NavigationActions } from 'react-navigation'
 import { Container, Row, Space, Button } from '../components'
-import { KeyboardAvoidAndScroll, TasksDetails } from '../containers'
+import {
+  KeyboardAvoidAndScroll,
+  TasksDetails,
+  ModalLoading
+} from '../containers'
 import { apiGetTasksDetails } from '../api/getTasks'
 import { apiAcceptJob } from '../api/AcceptJob'
 
@@ -9,7 +13,8 @@ class AcceptTask extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      taskDetails: {}
+      taskDetails: {},
+      loading: false
     }
   }
 
@@ -23,14 +28,22 @@ class AcceptTask extends Component {
     })
   }
 
+  handleLoading = loading => {
+    this.setState({ loading })
+  }
+
   acceptTask = async () => {
     const { taskDetails } = this.state
 
     const { navigation } = this.props
 
+    this.handleLoading(true)
+
     const response = await apiAcceptJob(taskDetails.TaskID)
 
     if (response.data === '') {
+      this.handleLoading(false)
+
       const resetAction = StackActions.reset({
         index: 0,
         actions: [NavigationActions.navigate({ routeName: 'TasksJobAssigned' })]
@@ -41,7 +54,7 @@ class AcceptTask extends Component {
   }
 
   render() {
-    const { taskDetails } = this.state
+    const { taskDetails, loading } = this.state
 
     const { navigation } = this.props
 
@@ -61,6 +74,19 @@ class AcceptTask extends Component {
               </Space>
             </Row>
           </Space>
+          <ModalLoading
+            loading={loading}
+            // onDismiss={() =>
+            //   resApi
+            //     ? Alert.alert(
+            //         '',
+            //         resApi.data.error_description || 'Error',
+            //         [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
+            //         { cancelable: false }
+            //       )
+            //     : {}
+            // }
+          />
         </Container>
       </KeyboardAvoidAndScroll>
     )

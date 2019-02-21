@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Picker, Platform, Alert } from 'react-native'
+import { Picker, Platform, Alert, Keyboard } from 'react-native'
 import { CheckBox } from 'react-native-elements'
 import { StackActions, NavigationActions } from 'react-navigation'
 import styled from 'styled-components'
@@ -122,6 +122,8 @@ class ProcessTask extends Component {
   }
 
   handleAddImageStatus = status => {
+    Keyboard.dismiss()
+
     this.setState({ addImage: status })
   }
 
@@ -150,6 +152,8 @@ class ProcessTask extends Component {
       ClassLevel: completed ? 3 : 2,
       Results: results
     }
+
+    Keyboard.dismiss()
 
     const response = await apiSaveTasksDetails(data)
 

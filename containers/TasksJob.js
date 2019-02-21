@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { KeyboardAvoidAndScroll, TasksDetails, TopMenu } from '../containers'
 import { Container, Space } from '../components'
+import styled from 'styled-components'
 import {
   apiGetTasksNewJob,
   apiGetTasksJobAssigned,
@@ -27,6 +28,10 @@ const TasksLists = props => {
     </Space>
   )
 }
+
+const ContainerNonePdBottom = styled(Container)`
+  padding-bottom: 0;
+`
 
 class TasksJob extends Component {
   constructor(props) {
@@ -111,19 +116,19 @@ class TasksJob extends Component {
     }
 
     return (
-      <KeyboardAvoidAndScroll>
-        <Container noPdSide={1}>
-          <TopMenu
-            navigation={navigation}
-            handleTasksActive={this.handleTasksActive}
-            newJobCount={tasksNewJobLists.length}
-            assignedCount={tasksJobAssignedLists.length}
-            processCount={tasksJobProcessLists.length}
-            completedCount={tasksCompletedLists.length}
-          />
-          {tasks}
-        </Container>
-      </KeyboardAvoidAndScroll>
+      <ContainerNonePdBottom noPdSide={1}>
+        <TopMenu
+          navigation={navigation}
+          handleTasksActive={this.handleTasksActive}
+          newJobCount={tasksNewJobLists.length}
+          assignedCount={tasksJobAssignedLists.length}
+          processCount={tasksJobProcessLists.length}
+          completedCount={tasksCompletedLists.length}
+        />
+        <KeyboardAvoidAndScroll flex={1}>
+          <Space>{tasks}</Space>
+        </KeyboardAvoidAndScroll>
+      </ContainerNonePdBottom>
     )
   }
 }

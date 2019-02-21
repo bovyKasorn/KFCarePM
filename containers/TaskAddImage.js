@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
-import { TouchableHighlight, Text, Image } from 'react-native'
+import { TouchableHighlight, Text, Image, Keyboard } from 'react-native'
 import styled from 'styled-components'
 import ImagePicker from 'react-native-image-picker'
+import { ModalLoading } from '../containers'
 import { Row, Space, Button, Bullet, Font, Input, Divider } from '../components'
 import { normalize } from '../utilities'
 import {
@@ -49,18 +50,6 @@ const ButtonAddImage = props => {
   )
 }
 
-const ListImageSpace = styled(Space)`
-  flex-grow: 1;
-  flex-shrink: 0;
-  flex-basis: 32%;
-`
-
-const ListImage = styled(Image)`
-  width: 100%;
-  height: 100%;
-  background-color: #dfdfdf;
-`
-
 class TaskAddImage extends Component {
   constructor(props) {
     super(props)
@@ -71,7 +60,8 @@ class TaskAddImage extends Component {
       imageBeforeQuery: [],
       imageAfterQuery: [],
       imageBefore: [{ TaskID: taskId, Comment: '', ImageBase64: null }],
-      imageAfter: [{ TaskID: taskId, Comment: '', ImageBase64: null }]
+      imageAfter: [{ TaskID: taskId, Comment: '', ImageBase64: null }],
+      loading: false
     }
   }
 
@@ -84,6 +74,10 @@ class TaskAddImage extends Component {
     apiGetImagesAfter(taskId).then(res => {
       this.setState({ imageAfterQuery: res.data })
     })
+  }
+
+  handleLoading = loading => {
+    this.setState({ loading })
   }
 
   handleAddImage = (status, index) => {
@@ -171,6 +165,10 @@ class TaskAddImage extends Component {
   handleImageSave = async () => {
     const { imageBefore, imageAfter } = this.state
 
+    Keyboard.dismiss()
+
+    this.handleLoading(true)
+
     const response = []
 
     const imageBe = []
@@ -180,8 +178,7 @@ class TaskAddImage extends Component {
     })
 
     this.checkImageNull(imageBe).forEach(async img => {
-      const responseBe = await apiPostImagesBefore(img)
-      response.push(responseBe.data)
+      response.push(apiPostImagesBefore(img))
     })
 
     const imageAf = []
@@ -191,11 +188,16 @@ class TaskAddImage extends Component {
     })
 
     this.checkImageNull(imageAf).forEach(async img => {
-      const responseAf = await apiPostImagesAfter(img)
-      response.push(responseAf.data)
+      response.push(apiPostImagesAfter(img))
     })
 
-    this.props.handleAddImageStatus(false)
+    Promise.all(response).then(res => {
+      this.handleLoading(false)
+
+      console.log(res.data)
+    })
+
+    // this.props.handleAddImageStatus(false)
   }
 
   render() {
@@ -203,7 +205,8 @@ class TaskAddImage extends Component {
       imageBeforeQuery,
       imageBefore,
       imageAfterQuery,
-      imageAfter
+      imageAfter,
+      loading
     } = this.state
 
     const { handleAddImageStatus } = this.props
@@ -217,126 +220,138 @@ class TaskAddImage extends Component {
           </Font.H2>
         </Row>
 
-        {imageBeforeQuery.length > 0 ? (
-          <Row flexWrap="wrap">
-            {imageBeforeQuery.map((img, index) => {
+        {imageBeforeQuery.length > 0
+          ? imageBeforeQuery.map((img, index) => {
               return (
-                <ListImageSpace
-                  key={index}
-                  height={80}
-                  pdtop={2}
-                  pdbottom={2}
-                  pdleft={2}
-                  pdright={2}
-                >
-                  <ListImage
-                    resizeMode="cover"
-                    source={{
-                      uri: img.ImageUrl
-                    }}
-                  />
-                </ListImageSpace>
+                <Space key={index} mgtop={6}>
+                  <Row height={100}>
+                    <Image
+                      flex={2}
+                      backgroundColor="#dfdfdf"
+                      height="100%"
+                      source={{
+                        uri: img.ImageUrl
+                      }}
+                      resizeMode="cover"
+                    />
+
+                    <Space flex={3} mgleft={8}>
+                      <Font.H2>{img.Comment}</Font.H2>
+                    </Space>
+                  </Row>
+                  <Divider.Horizontal />
+                </Space>
               )
-            })}
-          </Row>
-        ) : null}
+            })
+          : null}
 
         {imageBefore.map((img, index) => {
           return (
-            <Row key={index} height={100}>
-              {img.ImageBase64 ? (
-                <Image
-                  flex={2}
-                  height="100%"
-                  source={{
-                    uri: `data:image/jpeg;base64,${img.ImageBase64}`
-                  }}
-                  resizeMode="cover"
-                />
-              ) : (
-                <ButtonAddImage
-                  onPress={() => this.handleAddImage('before', index)}
-                />
-              )}
+            <Space key={index}>
+              <Row height={100}>
+                {img.ImageBase64 ? (
+                  <Image
+                    flex={2}
+                    height="100%"
+                    source={{
+                      uri: `data:image/jpeg;base64,${img.ImageBase64}`
+                    }}
+                    resizeMode="cover"
+                  />
+                ) : (
+                  <ButtonAddImage
+                    onPress={() => this.handleAddImage('before', index)}
+                  />
+                )}
 
-              <Space flex={3} mgleft={8}>
-                <TextArea
-                  flex={1}
-                  placeholder="Comment"
-                  multiline={true}
-                  numberOfLines={4}
-                  value={img.Comment}
-                  onChangeText={text =>
-                    this.handleImageComment('before', text, index)
-                  }
-                />
-              </Space>
-            </Row>
+                <Space flex={3} mgleft={8}>
+                  <TextArea
+                    flex={1}
+                    placeholder="Comment"
+                    multiline={true}
+                    numberOfLines={4}
+                    value={img.Comment}
+                    onChangeText={text =>
+                      this.handleImageComment('before', text, index)
+                    }
+                  />
+                </Space>
+              </Row>
+            </Space>
           )
         })}
 
-        <Row>
-          <Bullet small={1} />
-          <Font.H2 primary={1} bold={1}>
-            Image After
-          </Font.H2>
-        </Row>
+        <Space mgtop={14}>
+          <Divider.Horizontal />
+        </Space>
 
-        {imageAfterQuery.length > 0 ? (
-          <Row flexWrap="wrap">
-            {imageAfterQuery.map((img, index) => {
-              return (
-                <ListImageSpace
-                  key={index}
-                  height={80}
-                  pdtop={2}
-                  pdbottom={2}
-                  pdleft={2}
-                  pdright={2}
-                >
-                  <ListImage
-                    resizeMode="cover"
-                    source={{
-                      uri: img.ImageUrl
-                    }}
-                  />
-                </ListImageSpace>
-              )
-            })}
+        <Space mgtop={14}>
+          <Row>
+            <Bullet small={1} />
+            <Font.H2 primary={1} bold={1}>
+              Image After
+            </Font.H2>
           </Row>
-        ) : null}
+        </Space>
+
+        {imageAfterQuery.length > 0
+          ? imageAfterQuery.map((img, index) => {
+              return (
+                <Space key={index} mgtop={6}>
+                  <Row height={100}>
+                    <Image
+                      flex={2}
+                      backgroundColor="#dfdfdf"
+                      height="100%"
+                      source={{
+                        uri: img.ImageUrl
+                      }}
+                      resizeMode="cover"
+                    />
+
+                    <Space flex={3} mgleft={8}>
+                      <Font.H2>{img.Comment}</Font.H2>
+                    </Space>
+                  </Row>
+                  <Divider.Horizontal />
+                </Space>
+              )
+            })
+          : null}
 
         {imageAfter.map((img, index) => {
           return (
-            <Row key={index} height={100}>
-              {img.ImageBase64 ? (
-                <Image
-                  flex={2}
-                  height="100%"
-                  source={{
-                    uri: `data:image/jpeg;base64,${img.ImageBase64}`
-                  }}
-                  resizeMode="cover"
-                />
-              ) : (
-                <ButtonAddImage
-                  onPress={() => this.handleAddImage('after', index)}
-                />
-              )}
+            <Space key={index}>
+              <Row height={100}>
+                {img.ImageBase64 ? (
+                  <Image
+                    flex={2}
+                    height="100%"
+                    source={{
+                      uri: `data:image/jpeg;base64,${img.ImageBase64}`
+                    }}
+                    resizeMode="cover"
+                  />
+                ) : (
+                  <ButtonAddImage
+                    onPress={() => this.handleAddImage('after', index)}
+                  />
+                )}
 
-              <Space flex={3} mgleft={8}>
-                <TextArea
-                  flex={1}
-                  placeholder="Comment"
-                  multiline={true}
-                  numberOfLines={4}
-                  value={img.Comment}
-                  onChangeText={text =>
-                    this.handleImageComment('after', text, index)
-                  }
-                />
-              </Space>
-            </Row>
+                <Space flex={3} mgleft={8}>
+                  <TextArea
+                    flex={1}
+                    placeholder="Comment"
+                    multiline={true}
+                    numberOfLines={4}
+                    value={img.Comment}
+                    onChangeText={text =>
+                      this.handleImageComment('after', text, index)
+                    }
+                  />
+                </Space>
+              </Row>
+            </Space>
           )
         })}
 
@@ -362,6 +377,20 @@ class TaskAddImage extends Component {
             </Space>
           </Row>
         </Space>
+
+        <ModalLoading
+          loading={loading}
+          // onDismiss={() =>
+          //   resApi
+          //     ? Alert.alert(
+          //         '',
+          //         resApi.data.error_description || 'Error',
+          //         [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
+          //         { cancelable: false }
+          //       )
+          //     : {}
+          // }
+        />
       </Space>
     )
   }

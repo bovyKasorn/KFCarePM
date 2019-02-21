@@ -1,4 +1,4 @@
-import { Alert, AsyncStorage } from 'react-native'
+import { AsyncStorage } from 'react-native'
 import DeviceInfo from 'react-native-device-info'
 import axios from 'axios'
 import qs from 'qs'
@@ -34,12 +34,6 @@ export async function apiLogin(info) {
 
     return response
   } catch (error) {
-    Alert.alert(
-      '',
-      error.response.data.error_description || 'Error',
-      [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
-      { cancelable: false }
-    )
     return error.response
   }
 }

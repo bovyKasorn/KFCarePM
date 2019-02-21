@@ -1,5 +1,5 @@
 import React from 'react'
-import { Image, Platform } from 'react-native'
+import { Image, Platform, Keyboard, Alert } from 'react-native'
 import styled from 'styled-components'
 import {
   Bullet,
@@ -12,7 +12,11 @@ import {
   Segment,
   Space
 } from '../components'
-import { KeyboardAvoidAndScroll, SelectSections } from '../containers'
+import {
+  KeyboardAvoidAndScroll,
+  SelectSections,
+  ModalLoading
+} from '../containers'
 import { normalize } from '../utilities'
 import { apiRegister } from '../api/Register'
 import { apiGetSections } from '../api/getSections'
@@ -28,7 +32,9 @@ class RegisterInformation extends React.Component {
       empId: null,
       mobile: null,
       sections: [],
-      sectionSelected: Platform.OS === 'android' ? 1 : null
+      sectionSelected: Platform.OS === 'android' ? 1 : null,
+      loading: false,
+      resApi: null
     }
   }
 
@@ -50,6 +56,10 @@ class RegisterInformation extends React.Component {
     this.setState({ sectionSelected: section })
   }
 
+  handleLoading = loading => {
+    this.setState({ loading })
+  }
+
   render() {
     const {
       fullName,
@@ -59,7 +69,9 @@ class RegisterInformation extends React.Component {
       empId,
       mobile,
       sections,
-      sectionSelected
+      sectionSelected,
+      loading,
+      resApi
     } = this.state
 
     const { navigation } = this.props
@@ -191,9 +203,22 @@ class RegisterInformation extends React.Component {
                   )
                     return
 
+                  Keyboard.dismiss()
+
+                  this.handleLoading(true)
+
                   const response = await apiRegister(information)
 
+                  if (response.data !== '') {
+                    this.setState({ resApi: response }, () =>
+                      this.handleLoading(false)
+                    )
+                  }
+
                   if (response.data === '') {
+                    this.setState({ resApi: null }, () =>
+                      this.handleLoading(false)
+                    )
                     navigation.navigate('RegisterSuccess')
                   }
 
@@ -203,6 +228,24 @@ class RegisterInformation extends React.Component {
                 Sign Up
               </Button>
             </Segment.Center>
+
+            <ModalLoading
+              loading={loading}
+              onDismiss={() =>
+                resApi
+                  ? Alert.alert(
+                      '',
+                      resApi.data.ModelState
+                        ? resApi.data.ModelState['user.Email'][0] || 'Error'
+                        : resApi.data || 'Error',
+                      [
+                        { text: 'OK', onPress: () => console.log('OK Pressed') }
+                      ],
+                      { cancelable: false }
+                    )
+                  : {}
+              }
+            />
           </Space>
         </Container>
       </KeyboardAvoidAndScroll>

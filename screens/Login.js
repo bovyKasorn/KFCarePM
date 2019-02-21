@@ -1,6 +1,7 @@
 import React from 'react'
-import { Text, Image, TouchableHighlight } from 'react-native'
+import { Text, Image, TouchableHighlight, Keyboard, Alert } from 'react-native'
 import styled from 'styled-components'
+import { ModalLoading } from '../containers'
 import { Button, InputLogin, Container, Segment, Space } from '../components'
 import maintheme from '../theme'
 import { apiLogin } from '../api/Login'
@@ -49,7 +50,9 @@ class Login extends React.Component {
     super(props)
     this.state = {
       username: null,
-      password: null
+      password: null,
+      loading: false,
+      resApi: null
     }
   }
 
@@ -57,8 +60,12 @@ class Login extends React.Component {
     this.setState({ [name]: text })
   }
 
+  handleLoading = loading => {
+    this.setState({ loading })
+  }
+
   render() {
-    const { username, password } = this.state
+    const { username, password, loading, resApi } = this.state
     const { navigation } = this.props
 
     return (
@@ -120,9 +127,22 @@ class Login extends React.Component {
 
                 if (validateInfo.indexOf(false) !== -1) return
 
+                Keyboard.dismiss()
+
+                this.handleLoading(true)
+
                 const response = await apiLogin(information)
 
+                if (response.data.access_token === undefined) {
+                  this.setState({ resApi: response }, () =>
+                    this.handleLoading(false)
+                  )
+                }
+
                 if (response.data.access_token) {
+                  this.setState({ resApi: null }, () =>
+                    this.handleLoading(false)
+                  )
                   navigation.navigate('App')
                 }
               }}
@@ -144,6 +164,20 @@ class Login extends React.Component {
             Create a new account
           </Button>
         </Segment.CenterBottom>
+
+        <ModalLoading
+          loading={loading}
+          onDismiss={() =>
+            resApi
+              ? Alert.alert(
+                  '',
+                  resApi.data.error_description || 'Error',
+                  [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
+                  { cancelable: false }
+                )
+              : {}
+          }
+        />
       </Container>
     )
   }

@@ -1,6 +1,7 @@
 import React from 'react'
-import { Image } from 'react-native'
+import { Image, Keyboard, Alert } from 'react-native'
 import styled from 'styled-components'
+import { ModalLoading } from '../containers'
 import {
   Button,
   Container,
@@ -16,7 +17,9 @@ class ForgotPasswordInformation extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      email: null
+      email: null,
+      loading: false,
+      resApi: null
     }
   }
 
@@ -24,8 +27,12 @@ class ForgotPasswordInformation extends React.Component {
     this.setState({ email: text })
   }
 
+  handleLoading = loading => {
+    this.setState({ loading })
+  }
+
   render() {
-    const { email } = this.state
+    const { email, loading, resApi } = this.state
     const { navigation } = this.props
 
     return (
@@ -61,9 +68,22 @@ class ForgotPasswordInformation extends React.Component {
                   return
                 }
 
+                Keyboard.dismiss()
+
+                this.handleLoading(true)
+
                 const response = await apiForgotPassword(email)
 
+                if (response.data !== '') {
+                  this.setState({ resApi: response }, () =>
+                    this.handleLoading(false)
+                  )
+                }
+
                 if (response.data === '') {
+                  this.setState({ resApi: null }, () =>
+                    this.handleLoading(false)
+                  )
                   navigation.navigate('ForgotPasswordSuccess')
                 }
 
@@ -74,6 +94,22 @@ class ForgotPasswordInformation extends React.Component {
             </Button>
           </Space>
         </Segment.CenterMiddle>
+
+        <ModalLoading
+          loading={loading}
+          onDismiss={() =>
+            resApi
+              ? Alert.alert(
+                  '',
+                  resApi.data.ModelState
+                    ? resApi.data.ModelState['Email.Email'][0] || 'Error'
+                    : resApi.data || 'Error',
+                  [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
+                  { cancelable: false }
+                )
+              : {}
+          }
+        />
       </Container>
     )
   }

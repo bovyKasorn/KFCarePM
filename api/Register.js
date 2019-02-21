@@ -38,14 +38,6 @@ export async function apiRegister(info) {
 
     return response
   } catch (error) {
-    Alert.alert(
-      '',
-      error.response.data.ModelState
-        ? error.response.data.ModelState['user.Email'][0] || 'Error'
-        : error.response.data || 'Error',
-      [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
-      { cancelable: false }
-    )
     return error.response
   }
 }

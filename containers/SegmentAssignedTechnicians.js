@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Platform } from 'react-native'
 import { StackActions, NavigationActions } from 'react-navigation'
 import { Font, Space, Row, Bullet, Button, Segment } from '../components'
-import { SelectTechnicians, SelectStatus } from '../containers'
+import { SelectTechnicians, SelectStatus, ModalLoading } from '../containers'
 import { apiGetTechnicians } from '../api/getTechnicians'
 import { apiAssignedJob } from '../api/AssignedJob'
 
@@ -12,7 +12,8 @@ class SegmentAssignedTechnicians extends Component {
     this.state = {
       technicians: [],
       technicianSelected: [{ TechnicianID: null, TechnicianName: null }],
-      statusSelected: Platform.OS === 'android' ? 1 : null
+      statusSelected: Platform.OS === 'android' ? 1 : null,
+      loading: false
     }
   }
 
@@ -35,6 +36,10 @@ class SegmentAssignedTechnicians extends Component {
             : null
       )
     })
+  }
+
+  handleLoading = loading => {
+    this.setState({ loading })
   }
 
   handleSelectTechnicians = (technician, order) => {
@@ -89,6 +94,8 @@ class SegmentAssignedTechnicians extends Component {
     const { technicianSelected } = this.state
     const { taskId, navigation } = this.props
 
+    this.handleLoading(true)
+
     for (i = technicianSelected.length; i > 0; i--) {
       if (technicianSelected[i - 1].TechnicianID === null) {
         technicianSelected.splice(i - 1, 1)
@@ -99,6 +106,8 @@ class SegmentAssignedTechnicians extends Component {
       const response = await apiAssignedJob(taskId, technicianSelected)
 
       if (response.data === '') {
+        this.handleLoading(false)
+
         const resetAction = StackActions.reset({
           index: 0,
           actions: [NavigationActions.navigate({ routeName: 'TasksNewJob' })]
@@ -121,13 +130,18 @@ class SegmentAssignedTechnicians extends Component {
           : null
     })
 
-    this.setState({ technicianSelected })
+    this.setState({ technicianSelected }, () => this.handleLoading(false))
 
     return
   }
 
   render() {
-    const { technicians, technicianSelected, statusSelected } = this.state
+    const {
+      technicians,
+      technicianSelected,
+      statusSelected,
+      loading
+    } = this.state
 
     return (
       <Space pdleft={15} pdright={15} pdtop={14}>
@@ -190,6 +204,20 @@ class SegmentAssignedTechnicians extends Component {
             <Button onPress={() => this.submitAssigned()}>Submit</Button>
           </Segment.Center>
         </Space>
+
+        <ModalLoading
+          loading={loading}
+          // onDismiss={() =>
+          //   resApi
+          //     ? Alert.alert(
+          //         '',
+          //         resApi.data.error_description || 'Error',
+          //         [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
+          //         { cancelable: false }
+          //       )
+          //     : {}
+          // }
+        />
       </Space>
     )
   }

@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Image } from 'react-native'
+import moment from 'moment'
 import styled from 'styled-components'
 import {
   Font,
@@ -48,7 +49,7 @@ class TasksDetails extends Component {
   render() {
     const { navigation, details, tasksActive, assigned } = this.props
 
-    // console.log('details :', details)
+    console.log('details :', details.Details)
 
     return (
       <Space>
@@ -68,13 +69,21 @@ class TasksDetails extends Component {
           <Space flex={1} pdleft={8} pdright={8} pdtop={6}>
             <Space>
               <Font.H3 bold={1}>
-                Date: <Font.H3 italic={1}>20/10/2018</Font.H3>
+                Date:{' '}
+                <Font.H3 italic={1}>
+                  {details.CreatedDate
+                    ? moment(parseInt(details.CreatedDate), 'YYYYMMDD').format(
+                        'D/MM/YYYY'
+                      )
+                    : '-'}
+                </Font.H3>
               </Font.H3>
             </Space>
 
             <Space pdtop={8}>
               <Font.H2 bold={1}>
-                Machine Type: <Font.H2>Lorem Ipsum is simply dummy</Font.H2>
+                Machine Type:{' '}
+                <Font.H2>{details.TypeName ? details.TypeName : '-'}</Font.H2>
               </Font.H2>
 
               <Font.H2 bold={1}>
@@ -82,7 +91,8 @@ class TasksDetails extends Component {
               </Font.H2>
 
               <Font.H2 bold={1}>
-                Machine Location: <Font.H2>Lorem Ipsum is simply dummy</Font.H2>
+                Machine Location:{' '}
+                <Font.H2>{details.Location ? details.Location : '-'}</Font.H2>
               </Font.H2>
             </Space>
 
@@ -90,14 +100,23 @@ class TasksDetails extends Component {
               <Font.H3 primary={1} bold={1}>
                 Accept Date:{' '}
                 <Font.H3 primary={1} italic={1}>
-                  2 Jan 2019
+                  {details.AcceptedDate
+                    ? moment(parseInt(details.AcceptedDate), 'YYYYMMDD').format(
+                        'D MMM YYYY'
+                      )
+                    : '-'}
                 </Font.H3>
               </Font.H3>
 
               <Font.H3 primary={1} bold={1}>
                 Submit Date:{' '}
                 <Font.H3 primary={1} italic={1}>
-                  3 Jan 2019
+                  {details.CompletedDate
+                    ? moment(
+                        parseInt(details.CompletedDate),
+                        'YYYYMMDD'
+                      ).format('D MMM YYYY')
+                    : '-'}
                 </Font.H3>
               </Font.H3>
             </Space>
@@ -115,14 +134,22 @@ class TasksDetails extends Component {
               <Row>
                 <Segment.Center flex={1}>
                   <Font.H2 bold={1}>Technician</Font.H2>
-                  <Font.H3>Alexander Martin</Font.H3>
+                  <Font.H3>
+                    {details.DisplayTechnician
+                      ? details.DisplayTechnician
+                      : '-'}
+                  </Font.H3>
                 </Segment.Center>
 
                 <Divider.Vertical />
 
                 <Segment.Center flex={1}>
                   <Font.H2 bold={1}>Status</Font.H2>
-                  <Font.H3 primary={1}>• Normal</Font.H3>
+                  <Font.H3 primary={1}>
+                    {details.ClassLevelName
+                      ? `• ${details.ClassLevelName}`
+                      : '-'}
+                  </Font.H3>
                 </Segment.Center>
               </Row>
             </Space>
@@ -138,25 +165,26 @@ class TasksDetails extends Component {
 
                 <Space pdleft={11} pdright={11}>
                   <Font.H2>
-                    Lorem Ipsum is simply dummy text of the printing and
-                    typesetting industry.
+                    {details.CommentInventory ? details.CommentInventory : '-'}
                   </Font.H2>
                 </Space>
               </Space>
 
               <Space pdtop={10} pdbottom={16}>
-                <Row>
-                  <Bullet small={1} />
-                  <Font.H2 primary={1} bold={1}>
-                    Technician Comment
-                  </Font.H2>
-                </Row>
-
-                <Space pdleft={11} pdright={11}>
-                  <Font.H2>
-                    Lorem Ipsum is simply dummy text of the printing and
-                    typesetting industry.
-                  </Font.H2>
+                <Space>
+                  <Row>
+                    <Bullet small={1} />
+                    <Font.H2 primary={1} bold={1}>
+                      Technician Comment
+                    </Font.H2>
+                  </Row>
+                  <Space pdleft={11} pdright={11}>
+                    <Font.H2>
+                      {details.CommentTechnician
+                        ? details.CommentTechnician
+                        : '-'}
+                    </Font.H2>
+                  </Space>
                 </Space>
 
                 {tasksActive ? (

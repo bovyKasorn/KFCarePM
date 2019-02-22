@@ -37,7 +37,7 @@ const CheckBoxCustom = props => {
       {...props}
       checkedColor="green"
       containerStyle={{
-        backgroundColor: '#ffffff',
+        backgroundColor: 'rgba(0,0,0,0)',
         borderWidth: 0,
         padding: 0,
         margin: 0
@@ -95,24 +95,116 @@ class ProcessTask extends Component {
     this.setState({ results })
   }
 
-  handleCheckbox = (name, id) => {
+  checkInputNumeric = (id, typeNum) => {
     const { results } = this.state
+
+    const resultIndex = results.findIndex(result => result.ResultID === id)
+
+    if (resultIndex === -1) {
+      return
+    }
+
+    const value = results[resultIndex].Result
+
+    if (parseInt(value) < typeNum.Min || parseInt(value) > typeNum.Max) {
+      Alert.alert(
+        '',
+        `Min: ${typeNum.Min} Max: ${typeNum.Max}`,
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              results[resultIndex].Result = null
+
+              this.setState({ results })
+            }
+          }
+        ],
+        { cancelable: false }
+      )
+
+      return
+    }
+  }
+
+  handleSelect = (text, id, typeOp) => {
+    const { results } = this.state
+
+    console.log('text :', text)
+
+    console.log('id :', id)
+
+    console.log('typeOp :', typeOp)
 
     const resultIndex = results.findIndex(result => result.ResultID === id)
 
     if (resultIndex === -1) {
       results.push({
         ResultID: id,
-        Result: [{ CheckBoxName: name }],
+        Result: text,
         Comment: ''
       })
     } else {
+      results[resultIndex].Result = text
+    }
+
+    this.setState({ results })
+
+    const valueIndex = typeOp.findIndex(type => type.OptionName === text)
+
+    if (typeOp[valueIndex].IsNormal === false) {
+      Alert.alert(
+        '',
+        typeOp[valueIndex].MessageErrorEn,
+        [
+          {
+            text: 'OK',
+            onPress: () => {}
+          }
+        ],
+        { cancelable: false }
+      )
+    }
+  }
+
+  handleCheckbox = (info, id) => {
+    const { results } = this.state
+
+    const resultIndex = results.findIndex(result => result.ResultID === id)
+
+    const checkIsNormal = () => {
+      if (info.IsNormal === false) {
+        Alert.alert(
+          '',
+          info.MessageErrorEn,
+          [
+            {
+              text: 'OK',
+              onPress: () => {}
+            }
+          ],
+          { cancelable: false }
+        )
+      }
+    }
+
+    if (resultIndex === -1) {
+      results.push({
+        ResultID: id,
+        Result: [{ CheckBoxName: info.OptionName }],
+        Comment: ''
+      })
+
+      checkIsNormal()
+    } else {
       const checkedIndex = results[resultIndex].Result.findIndex(
-        checked => checked.CheckBoxName === name
+        checked => checked.CheckBoxName === info.OptionName
       )
 
       if (checkedIndex === -1) {
-        results[resultIndex].Result.push({ CheckBoxName: name })
+        results[resultIndex].Result.push({ CheckBoxName: info.OptionName })
+
+        checkIsNormal()
       } else {
         results[resultIndex].Result.splice(checkedIndex, 1)
       }
@@ -169,6 +261,8 @@ class ProcessTask extends Component {
       completed
     } = this.state
 
+    console.log('results :', results)
+
     const { navigation } = this.props
 
     const taskDetail = taskDetails.Details
@@ -212,6 +306,12 @@ class ProcessTask extends Component {
                         onChangeText={text =>
                           this.handleInput(text, result.ResultID)
                         }
+                        onBlur={() =>
+                          this.checkInputNumeric(
+                            result.ResultID,
+                            result.TypeNumber
+                          )
+                        }
                         value={
                           resultIndex !== -1 ? results[resultIndex].Result : ''
                         }
@@ -240,7 +340,11 @@ class ProcessTask extends Component {
                         labelSelected={labelSelected}
                         valueSelected={labelSelected}
                         handleValueSelected={text =>
-                          this.handleInput(text, result.ResultID)
+                          this.handleSelect(
+                            text,
+                            result.ResultID,
+                            result.TypeOptions
+                          )
                         }
                       >
                         {result.TypeOptions.map((option, count) => {
@@ -289,7 +393,7 @@ class ProcessTask extends Component {
                                     }
                                     onPress={() =>
                                       this.handleCheckbox(
-                                        option.OptionName,
+                                        option,
                                         result.ResultID
                                       )
                                     }
@@ -310,8 +414,6 @@ class ProcessTask extends Component {
           )
         })
       : null
-
-    console.log('results :', results)
 
     return (
       <KeyboardAvoidAndScroll>

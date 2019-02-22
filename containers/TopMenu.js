@@ -89,7 +89,11 @@ const TopMenu = props => {
           newJob={1}
           source={require('../assets/images/allNewJobIcon.png')}
           tasksCount={newJobCount}
-          onPress={() => navigation.navigate('TasksNewJob')}
+          onPress={() =>
+            navigation.state.routeName === 'TasksNewJob'
+              ? null
+              : navigation.push('TasksNewJob')
+          }
         >
           NEW JOB
         </Button>
@@ -100,7 +104,11 @@ const TopMenu = props => {
           imgPdBottom={1}
           source={require('../assets/images/allJobAssignedIcon.png')}
           tasksCount={assignedCount}
-          onPress={() => navigation.navigate('TasksJobAssigned')}
+          onPress={() =>
+            navigation.state.routeName === 'TasksJobAssigned'
+              ? null
+              : navigation.push('TasksJobAssigned')
+          }
         >
           JOB ASSIGNED
         </Button>
@@ -110,7 +118,11 @@ const TopMenu = props => {
           imgPdBottom={3}
           source={require('../assets/images/allJobProcessIcon.png')}
           tasksCount={processCount}
-          onPress={() => navigation.navigate('TasksJobProcess')}
+          onPress={() =>
+            navigation.state.routeName === 'TasksJobProcess'
+              ? null
+              : navigation.push('TasksJobProcess')
+          }
         >
           JOB PROCESS
         </Button>
@@ -120,7 +132,11 @@ const TopMenu = props => {
           imgPdBottom={3}
           source={require('../assets/images/allJobCompletedIcon.png')}
           tasksCount={completedCount}
-          onPress={() => navigation.navigate('TasksCompleted')}
+          onPress={() =>
+            navigation.state.routeName === 'TasksCompleted'
+              ? null
+              : navigation.push('TasksCompleted')
+          }
         >
           COMPLETED
         </Button>

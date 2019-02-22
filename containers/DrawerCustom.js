@@ -20,33 +20,75 @@ const DrawerBgImage = styled(Image)`
   width: 500%;
 `
 
+const DrawerMenuBtn = styled(TouchableHighlight)`
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  /* background-color: ${props =>
+    props.active === 1
+      ? props.theme.color.button.secondary.color
+      : props.theme.color.button.primary.color}; */
+`
+
+const DrawerMenuBtnText = styled(Text)`
+  color: ${props => props.theme.color.button.text};
+`
+
 class DrawerCustom extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      activePage: 'assigned'
+    }
+  }
+
+  handleActivePage = page => {
+    this.setState({ activePage: page })
+  }
+
   render() {
+    const { activePage } = this.state
+
     const { navigation } = this.props
 
     return (
-      <Space
-        flex={1}
+      <Container
+        noPdSide={1}
         style={{
           backgroundColor: '#015151',
-          position: 'relative',
-          justifyContent: 'center'
+          // position: 'relative',
+          alignItems: 'center'
         }}
       >
-        <DrawerBgImage
+        {/* <DrawerBgImage
           source={require('../assets/images/bgMenu.png')}
           resizeMode="contain"
-        />
-        <TouchableHighlight
+        /> */}
+        {/* <DrawerItems {...this.props} /> */}
+
+        <DrawerMenuBtn
+          active={activePage === 'assigned' ? 1 : 0}
           onPress={() => {
-            AsyncStorage.removeItem('@token')
-            navigation.navigate('Auth')
+            // console.log('this.btnSignout :', this.btnSignout)
+            // AsyncStorage.removeItem('@token')
+            navigation.navigate('TasksJobAssigned')
           }}
         >
-          <Text style={{ color: '#ffffff' }}>Sign out</Text>
-        </TouchableHighlight>
-        <DrawerItems {...this.props} />
-      </Space>
+          <DrawerMenuBtnText>JOB ASSIGNED</DrawerMenuBtnText>
+        </DrawerMenuBtn>
+
+        <DrawerMenuBtn
+          active={activePage === 'complete' ? 1 : 0}
+          onPress={() => {
+            this.handleActivePage('complete')
+            // console.log('this.btnSignout :', this.btnSignout)
+            // AsyncStorage.removeItem('@token')
+            navigation.navigate('TasksCompleted')
+          }}
+        >
+          <DrawerMenuBtnText>COMPLETE</DrawerMenuBtnText>
+        </DrawerMenuBtn>
+      </Container>
     )
   }
 }

@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import maintheme from '../theme'
 import { normalize } from '../utilities'
 import { Row, Space, Segment } from '../components'
+import { apiGetProfile } from '../api/getProfile'
 
 const ButtonPrimary = styled(TouchableHighlight)`
   height: 100%;
@@ -92,7 +93,7 @@ const TopMenu = props => {
           onPress={() =>
             navigation.state.routeName === 'TasksNewJob'
               ? null
-              : navigation.push('TasksNewJob')
+              : navigation.navigate('TasksNewJob')
           }
         >
           NEW JOB
@@ -107,7 +108,7 @@ const TopMenu = props => {
           onPress={() =>
             navigation.state.routeName === 'TasksJobAssigned'
               ? null
-              : navigation.push('TasksJobAssigned')
+              : navigation.navigate('TasksJobAssigned')
           }
         >
           JOB ASSIGNED
@@ -121,7 +122,7 @@ const TopMenu = props => {
           onPress={() =>
             navigation.state.routeName === 'TasksJobProcess'
               ? null
-              : navigation.push('TasksJobProcess')
+              : navigation.navigate('TasksJobProcess')
           }
         >
           JOB PROCESS
@@ -135,7 +136,7 @@ const TopMenu = props => {
           onPress={() =>
             navigation.state.routeName === 'TasksCompleted'
               ? null
-              : navigation.push('TasksCompleted')
+              : navigation.navigate('TasksCompleted')
           }
         >
           COMPLETED

@@ -81,7 +81,7 @@ class AcceptTask extends Component {
             //     ? Alert.alert(
             //         '',
             //         resApi.data.error_description || 'Error',
-            //         [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
+            //         [{ text: 'OK', onPress: () => {} }],
             //         { cancelable: false }
             //       )
             //     : {}

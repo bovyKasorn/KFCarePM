@@ -42,7 +42,7 @@ const TextArea = styled(Input)`
 
 const ButtonAddImage = props => {
   return (
-    <Space flex={2} height="100%" mgleft={2} mgright={2}>
+    <Space flex={2} height="100%">
       <ButtonSecondary flex={1} {...props}>
         <ButtonText>+</ButtonText>
       </ButtonSecondary>
@@ -194,10 +194,9 @@ class TaskAddImage extends Component {
     Promise.all(response).then(res => {
       this.handleLoading(false)
 
-      console.log(res.data)
+      // console.log(res)
+      this.props.handleAddImageStatus(false)
     })
-
-    // this.props.handleAddImageStatus(false)
   }
 
   render() {
@@ -247,7 +246,7 @@ class TaskAddImage extends Component {
 
         {imageBefore.map((img, index) => {
           return (
-            <Space key={index}>
+            <Space key={index} mgtop={8}>
               <Row height={100}>
                 {img.ImageBase64 ? (
                   <Image
@@ -281,7 +280,7 @@ class TaskAddImage extends Component {
           )
         })}
 
-        <Space mgtop={14}>
+        <Space mgtop={8}>
           <Divider.Horizontal />
         </Space>
 
@@ -321,7 +320,7 @@ class TaskAddImage extends Component {
 
         {imageAfter.map((img, index) => {
           return (
-            <Space key={index}>
+            <Space key={index} mgtop={8}>
               <Row height={100}>
                 {img.ImageBase64 ? (
                   <Image
@@ -355,7 +354,7 @@ class TaskAddImage extends Component {
           )
         })}
 
-        <Space pdtop={14}>
+        <Space mgtop={8}>
           <Divider.Horizontal />
         </Space>
 
@@ -385,7 +384,7 @@ class TaskAddImage extends Component {
           //     ? Alert.alert(
           //         '',
           //         resApi.data.error_description || 'Error',
-          //         [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
+          //         [{ text: 'OK', onPress: () => {} }],
           //         { cancelable: false }
           //       )
           //     : {}

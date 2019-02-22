@@ -1,19 +1,15 @@
 import axios from 'axios'
 import { AsyncStorage } from 'react-native'
-import qs from 'qs'
-
 import Environment from '../Environment'
 
-export async function apiSaveTasksDetails(data) {
+export async function apiGetProfile() {
   try {
     const AuthToken = `Bearer ${await AsyncStorage.getItem('@token')}`
 
-    let response = await axios.post(
-      `${Environment.API_ENDPOINT}/api/tasks/save`,
-      JSON.stringify(data),
+    let response = await axios.get(
+      `${Environment.API_ENDPOINT}/api/account/myprofile`,
       {
         headers: {
-          'Content-Type': 'application/json',
           Authorization: AuthToken
         }
       }

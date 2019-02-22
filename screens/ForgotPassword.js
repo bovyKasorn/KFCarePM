@@ -104,7 +104,7 @@ class ForgotPasswordInformation extends React.Component {
                   resApi.data.ModelState
                     ? resApi.data.ModelState['Email.Email'][0] || 'Error'
                     : resApi.data || 'Error',
-                  [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
+                  [{ text: 'OK', onPress: () => {} }],
                   { cancelable: false }
                 )
               : {}

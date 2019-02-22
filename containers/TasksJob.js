@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { KeyboardAvoidAndScroll, TasksDetails, TopMenu } from '../containers'
-import { Container, Space } from '../components'
+import { Container, Space, Font, Segment } from '../components'
 import styled from 'styled-components'
 import {
   apiGetTasksNewJob,

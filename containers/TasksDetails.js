@@ -49,8 +49,6 @@ class TasksDetails extends Component {
   render() {
     const { navigation, details, tasksActive, assigned } = this.props
 
-    console.log('details :', details.Details)
-
     return (
       <Space>
         <Space pdleft={8} pdtop={6}>

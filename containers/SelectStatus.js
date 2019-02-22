@@ -7,10 +7,10 @@ class SelectStatus extends Component {
     super(props)
     this.state = {
       status: [
-        { statusID: 0, label: 'Normal' },
-        { statusID: 1, label: 'Class A' },
-        { statusID: 2, label: 'Class B' },
-        { statusID: 3, label: 'Class C' }
+        { statusID: 1, label: 'Normal' },
+        { statusID: 2, label: 'Class A' },
+        { statusID: 3, label: 'Class B' },
+        { statusID: 4, label: 'Class C' }
       ]
     }
   }

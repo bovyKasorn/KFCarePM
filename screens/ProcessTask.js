@@ -19,36 +19,12 @@ import {
   KeyboardAvoidAndScroll,
   TasksDetails,
   SelectStatus,
-  TaskAddImage
+  TaskAddImage,
+  ModalLoading
 } from '../containers'
 import { apiGetTasksDetails } from '../api/getTasks'
 import { apiSaveTasksDetails } from '../api/SaveTask'
 import { normalize } from '../utilities'
-
-const ListCheckboxSpace = styled(Space)`
-  flex-grow: 1;
-  flex-shrink: 0;
-  flex-basis: 49%;
-`
-
-const CheckBoxCustom = props => {
-  return (
-    <CheckBox
-      {...props}
-      checkedColor="green"
-      containerStyle={{
-        backgroundColor: 'rgba(0,0,0,0)',
-        borderWidth: 0,
-        padding: 0,
-        margin: 0
-      }}
-      textStyle={{
-        fontSize: normalize(12),
-        fontWeight: '400'
-      }}
-    />
-  )
-}
 
 class ProcessTask extends Component {
   constructor(props) {
@@ -57,9 +33,26 @@ class ProcessTask extends Component {
     this.state = {
       taskDetails: {},
       results: [],
-      statusSelected: Platform.OS === 'android' ? 0 : null,
+      statusSelected: Platform.OS === 'android' ? 1 : null,
       addImage: false,
-      completed: false
+      completed: false,
+      loading: false,
+      resApi: null
+    }
+  }
+
+  checkStatusSelected = status => {
+    switch (status) {
+      case 'Normal':
+        return 1
+      case 'Class A':
+        return 2
+      case 'Class B':
+        return 3
+      case 'Class C':
+        return 4
+      default:
+        break
     }
   }
 
@@ -69,8 +62,15 @@ class ProcessTask extends Component {
     const TaskId = navigation.getParam('TaskId')
 
     apiGetTasksDetails(TaskId).then(response => {
-      this.setState({ taskDetails: response.data })
+      this.setState({
+        taskDetails: response.data,
+        statusSelected: this.checkStatusSelected(response.data.ClassLevelName)
+      })
     })
+  }
+
+  handleLoading = loading => {
+    this.setState({ loading })
   }
 
   handleSelectStatus = status => {
@@ -82,14 +82,18 @@ class ProcessTask extends Component {
 
     const resultIndex = results.findIndex(result => result.ResultID === id)
 
-    if (resultIndex === -1) {
+    if (resultIndex === -1 && text.trim() !== '') {
       results.push({
         ResultID: id,
         Result: text,
         Comment: ''
       })
     } else {
-      results[resultIndex].Result = text
+      if (text.trim() === '') {
+        results.splice(resultIndex, 1)
+      } else {
+        results[resultIndex].Result = text
+      }
     }
 
     this.setState({ results })
@@ -127,87 +131,15 @@ class ProcessTask extends Component {
     }
   }
 
-  handleSelect = (text, id, typeOp) => {
+  crawlerResult = result => {
     const { results } = this.state
 
-    console.log('text :', text)
-
-    console.log('id :', id)
-
-    console.log('typeOp :', typeOp)
-
-    const resultIndex = results.findIndex(result => result.ResultID === id)
+    const resultIndex = results.findIndex(rs => rs.ResultID === result.ResultID)
 
     if (resultIndex === -1) {
-      results.push({
-        ResultID: id,
-        Result: text,
-        Comment: ''
-      })
+      results.push(result)
     } else {
-      results[resultIndex].Result = text
-    }
-
-    this.setState({ results })
-
-    const valueIndex = typeOp.findIndex(type => type.OptionName === text)
-
-    if (typeOp[valueIndex].IsNormal === false) {
-      Alert.alert(
-        '',
-        typeOp[valueIndex].MessageErrorEn,
-        [
-          {
-            text: 'OK',
-            onPress: () => {}
-          }
-        ],
-        { cancelable: false }
-      )
-    }
-  }
-
-  handleCheckbox = (info, id) => {
-    const { results } = this.state
-
-    const resultIndex = results.findIndex(result => result.ResultID === id)
-
-    const checkIsNormal = () => {
-      if (info.IsNormal === false) {
-        Alert.alert(
-          '',
-          info.MessageErrorEn,
-          [
-            {
-              text: 'OK',
-              onPress: () => {}
-            }
-          ],
-          { cancelable: false }
-        )
-      }
-    }
-
-    if (resultIndex === -1) {
-      results.push({
-        ResultID: id,
-        Result: [{ CheckBoxName: info.OptionName }],
-        Comment: ''
-      })
-
-      checkIsNormal()
-    } else {
-      const checkedIndex = results[resultIndex].Result.findIndex(
-        checked => checked.CheckBoxName === info.OptionName
-      )
-
-      if (checkedIndex === -1) {
-        results[resultIndex].Result.push({ CheckBoxName: info.OptionName })
-
-        checkIsNormal()
-      } else {
-        results[resultIndex].Result.splice(checkedIndex, 1)
-      }
+      results[resultIndex] = result
     }
 
     this.setState({ results })
@@ -230,7 +162,7 @@ class ProcessTask extends Component {
       Alert.alert(
         '',
         'Please select status.',
-        [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
+        [{ text: 'OK', onPress: () => {} }],
         { cancelable: false }
       )
 
@@ -240,16 +172,27 @@ class ProcessTask extends Component {
     const data = {
       TaskID: TaskId,
       Comment: '',
-      Status: statusSelected,
-      ClassLevel: completed ? 3 : 2,
+      Status: completed ? 3 : 2,
+      ClassLevelID: statusSelected,
       Results: results
     }
 
     Keyboard.dismiss()
 
+    this.handleLoading(true)
+
     const response = await apiSaveTasksDetails(data)
 
-    console.log('response :', response)
+    if (response.data === '') {
+      // const resetAction = StackActions.reset({
+      //   index: 0,
+      //   actions: [NavigationActions.navigate({ routeName: 'TasksJobProcess' })]
+      // })
+      // navigation.dispatch(resetAction)
+      navigation.navigate('TasksJobProcess')
+    }
+
+    this.setState({ resApi: response }, () => this.handleLoading(false))
   }
 
   render() {
@@ -258,10 +201,9 @@ class ProcessTask extends Component {
       statusSelected,
       results,
       addImage,
-      completed
+      completed,
+      loading
     } = this.state
-
-    console.log('results :', results)
 
     const { navigation } = this.props
 
@@ -292,7 +234,9 @@ class ProcessTask extends Component {
                           this.handleInput(text, result.ResultID)
                         }
                         value={
-                          resultIndex !== -1 ? results[resultIndex].Result : ''
+                          resultIndex !== -1
+                            ? results[resultIndex].Result
+                            : result.Result
                         }
                       />
                     )
@@ -313,97 +257,27 @@ class ProcessTask extends Component {
                           )
                         }
                         value={
-                          resultIndex !== -1 ? results[resultIndex].Result : ''
+                          resultIndex !== -1
+                            ? results[resultIndex].Result
+                            : result.Result
                         }
                       />
                     )
                   case 2:
-                    Platform.OS === 'android'
-                      ? results.push({
-                          ResultID: result.ResultID,
-                          Result: result.TypeOptions[0].OptionName,
-                          Comment: ''
-                        })
-                      : null
-
-                    const labelSelected =
-                      Platform.OS === 'android'
-                        ? ''
-                        : resultIndex !== -1
-                        ? results[resultIndex].Result
-                        : ''
-
                     return (
-                      <Select
+                      <ProcessTaskSelect
                         key={order}
-                        placeholder={result.ChecklistName}
-                        labelSelected={labelSelected}
-                        valueSelected={labelSelected}
-                        handleValueSelected={text =>
-                          this.handleSelect(
-                            text,
-                            result.ResultID,
-                            result.TypeOptions
-                          )
-                        }
-                      >
-                        {result.TypeOptions.map((option, count) => {
-                          return (
-                            <Picker.Item
-                              key={count}
-                              label={option.OptionName}
-                              value={option.OptionName}
-                            />
-                          )
-                        })}
-                      </Select>
+                        result={result}
+                        crawlerResult={this.crawlerResult}
+                      />
                     )
                   case 3:
-                    let checkedList = []
-
-                    if (resultIndex !== -1) {
-                      checkedList = results[resultIndex].Result
-                    }
-
-                    const checkCheckedList = checkName => {
-                      return checkedList.findIndex(
-                        check => check.CheckBoxName === checkName
-                      )
-                    }
-
                     return (
-                      <Space key={order} pdtop={8} pdleft={6}>
-                        <Font.H2 primary={1}>{result.ChecklistName}</Font.H2>
-                        <Space pdleft={14}>
-                          <Row flexWrap="wrap">
-                            {result.TypeOptions.map((option, index) => {
-                              return (
-                                <ListCheckboxSpace
-                                  key={index}
-                                  pdtop={4}
-                                  pdbottom={4}
-                                >
-                                  <CheckBoxCustom
-                                    title={option.OptionName}
-                                    checkedColor="green"
-                                    checked={
-                                      checkCheckedList(option.OptionName) !== -1
-                                        ? true
-                                        : false
-                                    }
-                                    onPress={() =>
-                                      this.handleCheckbox(
-                                        option,
-                                        result.ResultID
-                                      )
-                                    }
-                                  />
-                                </ListCheckboxSpace>
-                              )
-                            })}
-                          </Row>
-                        </Space>
-                      </Space>
+                      <ProcessTaskCheckbox
+                        key={order}
+                        result={result}
+                        crawlerResult={this.crawlerResult}
+                      />
                     )
 
                   default:
@@ -474,8 +348,293 @@ class ProcessTask extends Component {
               </Space>
             </Space>
           )}
+
+          <ModalLoading
+            loading={loading}
+            onDismiss={() =>
+              resApi
+                ? Alert.alert(
+                    '',
+                    resApi.data || 'Error',
+                    [{ text: 'OK', onPress: () => {} }],
+                    { cancelable: false }
+                  )
+                : {}
+            }
+          />
         </Container>
       </KeyboardAvoidAndScroll>
+    )
+  }
+}
+
+class ProcessTaskSelect extends Component {
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      resultTaskSelect: null
+    }
+  }
+
+  componentDidMount() {
+    const { result, crawlerResult } = this.props
+
+    if (result.Result) {
+      this.setState({
+        resultTaskSelect: {
+          ResultID: result.ResultID,
+          Result: result.Result,
+          Comment: ''
+        }
+      })
+
+      return
+    }
+
+    if (Platform.OS === 'android') {
+      this.setState(
+        {
+          resultTaskSelect: {
+            ResultID: result.ResultID,
+            Result: result.TypeOptions[0].OptionName,
+            Comment: ''
+          }
+        },
+        () => crawlerResult(this.state.resultTaskSelect)
+      )
+
+      return
+    }
+
+    return
+  }
+
+  handleSelect = text => {
+    const { result, crawlerResult } = this.props
+
+    this.setState(
+      {
+        resultTaskSelect: {
+          ResultID: result.ResultID,
+          Result: text,
+          Comment: ''
+        }
+      },
+      () => crawlerResult(this.state.resultTaskSelect)
+    )
+
+    const valueIndex = result.TypeOptions.findIndex(
+      type => type.OptionName === text
+    )
+
+    if (result.TypeOptions[valueIndex].IsNormal === false) {
+      Alert.alert(
+        '',
+        result.TypeOptions[valueIndex].MessageErrorEn,
+        [
+          {
+            text: 'OK',
+            onPress: () => {}
+          }
+        ],
+        { cancelable: false }
+      )
+    }
+  }
+
+  render() {
+    const { resultTaskSelect } = this.state
+
+    const { result } = this.props
+
+    const labelSelected = resultTaskSelect
+      ? Platform.OS === 'android'
+        ? ''
+        : resultTaskSelect.Result
+      : null
+
+    return (
+      <Select
+        placeholder={result.ChecklistName}
+        labelSelected={labelSelected}
+        valueSelected={labelSelected}
+        handleValueSelected={text => this.handleSelect(text)}
+      >
+        {result.TypeOptions.map((option, count) => {
+          return (
+            <Picker.Item
+              key={count}
+              label={option.OptionName}
+              value={option.OptionName}
+            />
+          )
+        })}
+      </Select>
+    )
+  }
+}
+
+const ListCheckboxSpace = styled(Space)`
+  flex-grow: 1;
+  flex-shrink: 0;
+  flex-basis: 49%;
+`
+
+const CheckBoxCustom = props => {
+  return (
+    <CheckBox
+      {...props}
+      checkedColor="green"
+      containerStyle={{
+        backgroundColor: 'rgba(0,0,0,0)',
+        borderWidth: 0,
+        padding: 0,
+        margin: 0
+      }}
+      textStyle={{
+        fontSize: normalize(12),
+        fontWeight: '400'
+      }}
+    />
+  )
+}
+
+class ProcessTaskCheckbox extends Component {
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      resultTaskCheckbox: null
+    }
+  }
+
+  componentDidMount() {
+    const { result } = this.props
+
+    if (result.Result) {
+      this.setState({
+        resultTaskCheckbox: {
+          ResultID: result.ResultID,
+          Result: result.Result,
+          Comment: ''
+        }
+      })
+
+      return
+    }
+
+    return
+  }
+
+  checkIsNormal = info => {
+    if (info.IsNormal === false) {
+      Alert.alert(
+        '',
+        info.MessageErrorEn,
+        [
+          {
+            text: 'OK',
+            onPress: () => {}
+          }
+        ],
+        { cancelable: false }
+      )
+    }
+  }
+
+  handleCheckbox = info => {
+    const { resultTaskCheckbox } = this.state
+
+    const { result, crawlerResult } = this.props
+
+    if (!resultTaskCheckbox) {
+      this.checkIsNormal(info)
+
+      this.setState(
+        {
+          resultTaskCheckbox: {
+            ResultID: result.ResultID,
+            Result: info.OptionName,
+            Comment: ''
+          }
+        },
+        () => crawlerResult(this.state.resultTaskCheckbox)
+      )
+
+      return
+    }
+
+    const addCheckbox = []
+
+    if (resultTaskCheckbox.Result !== '') {
+      resultTaskCheckbox.Result.split(',').map(check => addCheckbox.push(check))
+    }
+
+    const checkedIndex = addCheckbox.indexOf(info.OptionName)
+
+    if (checkedIndex === -1) {
+      addCheckbox.push(info.OptionName)
+
+      resultTaskCheckbox.Result = addCheckbox.join()
+
+      this.checkIsNormal(info)
+
+      this.setState({ resultTaskCheckbox }, () =>
+        crawlerResult(this.state.resultTaskCheckbox)
+      )
+
+      return
+    }
+
+    addCheckbox.splice(checkedIndex, 1)
+
+    resultTaskCheckbox.Result = addCheckbox.join()
+
+    this.setState({ resultTaskCheckbox }, () =>
+      crawlerResult(this.state.resultTaskCheckbox)
+    )
+  }
+
+  checkCheckedList = checkName => {
+    const { resultTaskCheckbox } = this.state
+
+    let checkedList = []
+
+    if (resultTaskCheckbox) {
+      checkedList = resultTaskCheckbox.Result.split(',').map(res => res)
+    }
+
+    return checkedList.indexOf(checkName)
+  }
+
+  render() {
+    const { result } = this.props
+
+    return (
+      <Space pdtop={8} pdleft={6}>
+        <Font.H2 primary={1}>{result.ChecklistName}</Font.H2>
+        <Space pdleft={14}>
+          <Row flexWrap="wrap">
+            {result.TypeOptions.map((option, index) => {
+              return (
+                <ListCheckboxSpace key={index} pdtop={4} pdbottom={4}>
+                  <CheckBoxCustom
+                    title={option.OptionName}
+                    checkedColor="green"
+                    checked={
+                      this.checkCheckedList(option.OptionName) !== -1
+                        ? true
+                        : false
+                    }
+                    onPress={() => this.handleCheckbox(option)}
+                  />
+                </ListCheckboxSpace>
+              )
+            })}
+          </Row>
+        </Space>
+      </Space>
     )
   }
 }

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { KeyboardAvoidAndScroll, TasksDetails, TopMenu } from '../containers'
-import { Container, Space, Font, Segment } from '../components'
+import { Container, Space } from '../components'
 import styled from 'styled-components'
 import {
   apiGetTasksNewJob,
@@ -8,6 +8,7 @@ import {
   apiGetTasksJobProcess,
   apiGetTasksCompleted
 } from '../api/getTasks'
+import { apiGetProfile } from '../api/getProfile'
 
 const TasksLists = props => {
   const { tasksActive, navigation } = props
@@ -40,7 +41,8 @@ class TasksJob extends Component {
       tasksNewJobLists: [],
       tasksJobAssignedLists: [],
       tasksJobProcessLists: [],
-      tasksCompletedLists: []
+      tasksCompletedLists: [],
+      roleId: null
     }
   }
 
@@ -60,6 +62,10 @@ class TasksJob extends Component {
     apiGetTasksCompleted().then(response => {
       this.setState({ tasksCompletedLists: response.data })
     })
+
+    apiGetProfile().then(response => {
+      this.setState({ roleId: response.data.RoleID })
+    })
   }
 
   render() {
@@ -67,7 +73,8 @@ class TasksJob extends Component {
       tasksNewJobLists,
       tasksJobAssignedLists,
       tasksJobProcessLists,
-      tasksCompletedLists
+      tasksCompletedLists,
+      roleId
     } = this.state
 
     const { navigation, tasksActive } = this.props
@@ -124,6 +131,7 @@ class TasksJob extends Component {
           assignedCount={tasksJobAssignedLists.length}
           processCount={tasksJobProcessLists.length}
           completedCount={tasksCompletedLists.length}
+          roleId={roleId}
         />
         <KeyboardAvoidAndScroll flex={1}>
           <Space>{tasks}</Space>

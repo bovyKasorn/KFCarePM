@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Image } from 'react-native'
+import { Image, Animated, Easing } from 'react-native'
 import moment from 'moment'
 import styled from 'styled-components'
 import {
@@ -19,6 +19,25 @@ const TaskImage = styled(Image)`
 `
 
 class TasksDetails extends Component {
+  constructor(props) {
+    super(props)
+
+    // this.animatedMargin = new Animated.ValueXY({ x: 400, y: 0 })
+  }
+
+  // componentDidMount() {
+  //   this.test()
+  // }
+
+  // test = () => {
+  //   this.animatedMargin.setValue({ x: 400, y: 0 })
+  //   Animated.timing(this.animatedMargin, {
+  //     toValue: { x: 0, y: 0 },
+  //     duration: 250,
+  //     easing: Easing.linear
+  //   }).start()
+  // }
+
   navigateWithTaskID = stack => {
     const { navigation, details } = this.props
 
@@ -51,9 +70,15 @@ class TasksDetails extends Component {
 
     return (
       <Space>
+        {/* <Animated.View
+          style={{
+            transform: this.animatedMargin.getTranslateTransform()
+          }}
+        > */}
         <Space pdleft={8} pdtop={6}>
           <Font.H1 primary={1}>Machine Name 1</Font.H1>
         </Space>
+        {/* </Animated.View> */}
 
         <Space pdtop={8}>
           <TaskImage

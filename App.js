@@ -1,4 +1,5 @@
 import React from 'react'
+import { Platform, UIManager } from 'react-native'
 import {
   createStackNavigator,
   createAppContainer,
@@ -187,87 +188,12 @@ const AppStackWithDrawer = createDrawerNavigator(
   }
 )
 
-// const AppStackWithDrawer = createDrawerNavigator(
-//   {
-//     AppStack: createStackNavigator(
-//       {
-//         TasksNewJob: {
-//           screen: TasksNewJob,
-//           navigationOptions: {
-//             title: 'New Job',
-//             headerLeft: null
-//           }
-//         },
-
-//         AssignedTechnicians: {
-//           screen: AssignedTechnicians,
-//           navigationOptions: {
-//             title: 'Assigned'
-//           }
-//         },
-
-//         TasksJobAssigned: {
-//           screen: TasksJobAssigned,
-//           navigationOptions: {
-//             title: 'Job Assigned',
-//             headerLeft: null
-//           }
-//         },
-
-//         AcceptTask: {
-//           screen: AcceptTask,
-//           navigationOptions: {
-//             title: 'Accept'
-//           }
-//         },
-
-//         TasksJobProcess: {
-//           screen: TasksJobProcess,
-//           navigationOptions: {
-//             title: 'Job Process',
-//             headerLeft: null
-//           }
-//         },
-
-//         ProcessTask: {
-//           screen: ProcessTask,
-//           navigationOptions: {
-//             title: 'Job Process'
-//           }
-//         },
-
-//         TasksCompleted: {
-//           screen: TasksCompleted,
-//           navigationOptions: {
-//             title: 'Completed',
-//             headerLeft: null
-//           }
-//         },
-
-//         TasksCompleteDetails: {
-//           screen: TasksCompleteDetails,
-//           navigationOptions: {
-//             title: 'Completed'
-//           }
-//         }
-//       },
-//       {
-//         defaultNavigationOptions
-//       }
-//     )
-//   },
-//   {
-//     initialRouteName: 'AppStack',
-//     contentComponent: DrawerCustom
-//   }
-// )
-
 const AuthLoadingStack = createStackNavigator({
   AuthLoading: {
-    screen: AuthLoadingScreen
-    // navigationOptions: {
-    //   header: null
-    // }
+    screen: AuthLoadingScreen,
+    navigationOptions: {
+      header: null
+    }
   }
 })
 
@@ -288,6 +214,15 @@ const AppContainer = createAppContainer(
 )
 
 export default class App extends React.Component {
+  constructor(props) {
+    super(props)
+
+    if (Platform.OS === 'android') {
+      UIManager.setLayoutAnimationEnabledExperimental &&
+        UIManager.setLayoutAnimationEnabledExperimental(true)
+    }
+  }
+
   render() {
     return <AppContainer />
   }

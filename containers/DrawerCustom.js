@@ -153,7 +153,7 @@ class DrawerCustom extends Component {
               underlayColor="#D0103A"
               onPress={() => {
                 AsyncStorage.removeItem('@token')
-                navigation.navigate('Auth')
+                navigation.navigate('AuthLoading')
               }}
             >
               <Space pdtop={4} pdbottom={4}>

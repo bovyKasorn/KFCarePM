@@ -1,10 +1,15 @@
 import React from 'react'
-import { Text, TouchableHighlight, Image, View } from 'react-native'
+import {
+  Text,
+  TouchableHighlight,
+  Image,
+  View,
+  LayoutAnimation
+} from 'react-native'
 import styled from 'styled-components'
 import maintheme from '../theme'
 import { normalize } from '../utilities'
 import { Row, Space, Segment } from '../components'
-import { apiGetProfile } from '../api/getProfile'
 
 const ButtonPrimary = styled(TouchableHighlight)`
   height: 100%;
@@ -78,70 +83,99 @@ const TopMenu = props => {
     newJobCount,
     assignedCount,
     processCount,
-    completedCount
+    completedCount,
+    roleId
   } = props
+
+  const CustomLayoutLinear = {
+    duration: 300,
+    create: {
+      type: LayoutAnimation.Types.linear,
+      property: LayoutAnimation.Properties.opacity
+    },
+    update: {
+      type: LayoutAnimation.Types.linear,
+      property: LayoutAnimation.Properties.opacity
+    },
+    delete: {
+      type: LayoutAnimation.Types.linear,
+      property: LayoutAnimation.Properties.opacity
+    }
+  }
 
   return (
     <Space pdleft={4} pdright={4} pdbottom={8}>
-      <Row>
-        <Button
-          flex={1}
-          imgPdLeft={6}
-          newJob={1}
-          source={require('../assets/images/allNewJobIcon.png')}
-          tasksCount={newJobCount}
-          onPress={() =>
-            navigation.state.routeName === 'TasksNewJob'
-              ? null
-              : navigation.navigate('TasksNewJob')
-          }
-        >
-          NEW JOB
-        </Button>
+      {roleId ? (
+        <Row>
+          {roleId === 6 ? null : (
+            <Button
+              flex={1}
+              imgPdLeft={6}
+              newJob={1}
+              source={require('../assets/images/allNewJobIcon.png')}
+              tasksCount={newJobCount}
+              onPress={() => {
+                LayoutAnimation.configureNext(CustomLayoutLinear)
 
-        <Button
-          flex={1}
-          imgPdLeft={6}
-          imgPdBottom={1}
-          source={require('../assets/images/allJobAssignedIcon.png')}
-          tasksCount={assignedCount}
-          onPress={() =>
-            navigation.state.routeName === 'TasksJobAssigned'
-              ? null
-              : navigation.navigate('TasksJobAssigned')
-          }
-        >
-          JOB ASSIGNED
-        </Button>
+                navigation.state.routeName === 'TasksNewJob'
+                  ? null
+                  : navigation.navigate('TasksNewJob')
+              }}
+            >
+              NEW JOB
+            </Button>
+          )}
 
-        <Button
-          flex={1}
-          imgPdBottom={3}
-          source={require('../assets/images/allJobProcessIcon.png')}
-          tasksCount={processCount}
-          onPress={() =>
-            navigation.state.routeName === 'TasksJobProcess'
-              ? null
-              : navigation.navigate('TasksJobProcess')
-          }
-        >
-          JOB PROCESS
-        </Button>
+          <Button
+            flex={1}
+            imgPdLeft={6}
+            imgPdBottom={1}
+            source={require('../assets/images/allJobAssignedIcon.png')}
+            tasksCount={assignedCount}
+            onPress={() => {
+              LayoutAnimation.configureNext(CustomLayoutLinear)
 
-        <Button
-          flex={1}
-          imgPdBottom={3}
-          source={require('../assets/images/allJobCompletedIcon.png')}
-          tasksCount={completedCount}
-          onPress={() =>
-            navigation.state.routeName === 'TasksCompleted'
-              ? null
-              : navigation.navigate('TasksCompleted')
-          }
-        >
-          COMPLETED
-        </Button>
-      </Row>
+              navigation.state.routeName === 'TasksJobAssigned'
+                ? null
+                : navigation.navigate('TasksJobAssigned')
+            }}
+          >
+            JOB ASSIGNED
+          </Button>
+
+          <Button
+            flex={1}
+            imgPdBottom={3}
+            source={require('../assets/images/allJobProcessIcon.png')}
+            tasksCount={processCount}
+            onPress={() => {
+              LayoutAnimation.configureNext(CustomLayoutLinear)
+
+              navigation.state.routeName === 'TasksJobProcess'
+                ? null
+                : navigation.navigate('TasksJobProcess')
+            }}
+          >
+            JOB PROCESS
+          </Button>
+
+          <Button
+            flex={1}
+            imgPdBottom={3}
+            source={require('../assets/images/allJobCompletedIcon.png')}
+            tasksCount={completedCount}
+            onPress={() => {
+              LayoutAnimation.configureNext(CustomLayoutLinear)
+
+              navigation.state.routeName === 'TasksCompleted'
+                ? null
+                : navigation.navigate('TasksCompleted')
+            }}
+          >
+            COMPLETED
+          </Button>
+        </Row>
+      ) : null}
     </Space>
   )
 }

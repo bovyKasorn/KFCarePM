@@ -52,7 +52,7 @@ class ProcessTask extends Component {
       case 'Class C':
         return 4
       default:
-        break
+        return null
     }
   }
 
@@ -90,7 +90,8 @@ class ProcessTask extends Component {
       })
     } else {
       if (text.trim() === '') {
-        results.splice(resultIndex, 1)
+        // results.splice(resultIndex, 1)
+        results[resultIndex].Result = ''
       } else {
         results[resultIndex].Result = text
       }
@@ -152,7 +153,7 @@ class ProcessTask extends Component {
   }
 
   submitTask = async () => {
-    const { statusSelected, results, completed } = this.state
+    const { taskDetails, statusSelected, results, completed } = this.state
 
     const { navigation } = this.props
 
@@ -169,6 +170,45 @@ class ProcessTask extends Component {
       return
     }
 
+    let saveHistory = false
+
+    let numResult = 0
+
+    taskDetails.Details.map(detail => {
+      detail.Results.map(rs => {
+        numResult += 1
+        if (rs.Result !== null) {
+          saveHistory = true
+        }
+      })
+    })
+
+    const alert = () =>
+      Alert.alert(
+        '',
+        'Please fill up this form',
+        [{ text: 'OK', onPress: () => {} }],
+        { cancelable: false }
+      )
+
+    const checkEmptyString = results.findIndex(
+      rs => rs.Result === '' || rs.Result === null
+    )
+
+    if (saveHistory && checkEmptyString !== -1) {
+      alert()
+
+      return
+    } else if (!saveHistory) {
+      if (results.length !== numResult || checkEmptyString !== -1) {
+        alert()
+
+        return
+      }
+    }
+
+    this.handleLoading(true)
+
     const data = {
       TaskID: TaskId,
       Comment: '',
@@ -179,17 +219,17 @@ class ProcessTask extends Component {
 
     Keyboard.dismiss()
 
-    this.handleLoading(true)
-
     const response = await apiSaveTasksDetails(data)
 
     if (response.data === '') {
-      // const resetAction = StackActions.reset({
-      //   index: 0,
-      //   actions: [NavigationActions.navigate({ routeName: 'TasksJobProcess' })]
-      // })
-      // navigation.dispatch(resetAction)
-      navigation.navigate('TasksJobProcess')
+      this.handleLoading(false)
+      const resetAction = StackActions.reset({
+        index: 0,
+        actions: [NavigationActions.navigate({ routeName: 'TasksJobProcess' })]
+      })
+      navigation.dispatch(resetAction)
+      // navigation.navigate('TasksJobProcess')
+      return
     }
 
     this.setState({ resApi: response }, () => this.handleLoading(false))
@@ -202,7 +242,8 @@ class ProcessTask extends Component {
       results,
       addImage,
       completed,
-      loading
+      loading,
+      resApi
     } = this.state
 
     const { navigation } = this.props

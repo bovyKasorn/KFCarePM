@@ -110,24 +110,24 @@ class ProcessTask extends Component {
     }
 
     const value = results[resultIndex].Result
+    if (typeNum) {
+      if (parseInt(value) < typeNum.Min || parseInt(value) > typeNum.Max) {
+        Alert.alert(
+          '',
+          `Min: ${typeNum.Min} Max: ${typeNum.Max}`,
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                results[resultIndex].Result = null
 
-    if (parseInt(value) < typeNum.Min || parseInt(value) > typeNum.Max) {
-      Alert.alert(
-        '',
-        `Min: ${typeNum.Min} Max: ${typeNum.Max}`,
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              results[resultIndex].Result = null
-
-              this.setState({ results })
+                this.setState({ results })
+              }
             }
-          }
-        ],
-        { cancelable: false }
-      )
-
+          ],
+          { cancelable: false }
+        )
+    }
       return
     }
   }

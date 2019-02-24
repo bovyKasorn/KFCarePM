@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { KeyboardAvoidAndScroll, TasksDetails, TopMenu } from '../containers'
-import { Container, Space } from '../components'
+import { Container, Space, Segment, Font } from '../components'
 import styled from 'styled-components'
 import {
   apiGetTasksNewJob,
@@ -16,16 +16,24 @@ const TasksLists = props => {
 
   return (
     <Space>
-      {tasksLists.map((details, index) => {
-        return (
-          <TasksDetails
-            key={index}
-            navigation={navigation}
-            details={details}
-            tasksActive={tasksActive}
-          />
-        )
-      })}
+      {tasksLists.length === 0 ? (
+        <Container>
+          <Segment.CenterMiddle>
+            <Font.H2>No Data</Font.H2>
+          </Segment.CenterMiddle>
+        </Container>
+      ) : (
+        tasksLists.map((details, index) => {
+          return (
+            <TasksDetails
+              key={index}
+              navigation={navigation}
+              details={details}
+              tasksActive={tasksActive}
+            />
+          )
+        })
+      )}
     </Space>
   )
 }

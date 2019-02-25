@@ -8,7 +8,6 @@ import {
   apiGetTasksJobProcess,
   apiGetTasksCompleted
 } from '../api/getTasks'
-import { apiGetProfile } from '../api/getProfile'
 
 const TasksLists = props => {
   const { tasksActive, navigation } = props
@@ -49,8 +48,7 @@ class TasksJob extends Component {
       tasksNewJobLists: [],
       tasksJobAssignedLists: [],
       tasksJobProcessLists: [],
-      tasksCompletedLists: [],
-      roleId: null
+      tasksCompletedLists: []
     }
   }
 
@@ -70,10 +68,6 @@ class TasksJob extends Component {
     apiGetTasksCompleted().then(response => {
       this.setState({ tasksCompletedLists: response.data })
     })
-
-    apiGetProfile().then(response => {
-      this.setState({ roleId: response.data.RoleID })
-    })
   }
 
   render() {
@@ -81,11 +75,14 @@ class TasksJob extends Component {
       tasksNewJobLists,
       tasksJobAssignedLists,
       tasksJobProcessLists,
-      tasksCompletedLists,
-      roleId
+      tasksCompletedLists
     } = this.state
 
     const { navigation, tasksActive } = this.props
+
+    const { profile } = this.props.screenProps
+
+    const roleId = profile ? profile.RoleID : null
 
     let tasks
 
@@ -113,7 +110,7 @@ class TasksJob extends Component {
           <TasksLists
             navigation={navigation}
             tasksLists={tasksJobProcessLists}
-            tasksActive={tasksActive}
+            tasksActive={roleId === 6 ? tasksActive : 'completed'}
           />
         )
         break

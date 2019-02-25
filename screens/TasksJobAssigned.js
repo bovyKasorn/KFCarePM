@@ -3,9 +3,7 @@ import { TasksJob } from '../containers'
 
 class TasksJobAssigned extends Component {
   render() {
-    const { navigation } = this.props
-
-    return <TasksJob navigation={navigation} tasksActive="assigned" />
+    return <TasksJob {...this.props} tasksActive="assigned" />
   }
 }
 

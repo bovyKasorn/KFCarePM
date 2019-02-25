@@ -66,7 +66,10 @@ class Login extends React.Component {
 
   render() {
     const { username, password, loading, resApi } = this.state
+
     const { navigation } = this.props
+
+    const { getProfile } = this.props.screenProps
 
     return (
       <Container>
@@ -140,9 +143,10 @@ class Login extends React.Component {
                 }
 
                 if (response.data.access_token) {
-                  this.setState({ resApi: null }, () =>
+                  this.setState({ resApi: null }, () => {
                     this.handleLoading(false)
-                  )
+                    getProfile()
+                  })
                   navigation.navigate('App')
                 }
               }}

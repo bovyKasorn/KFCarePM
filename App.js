@@ -29,6 +29,7 @@ import {
   TasksCompleted,
   TasksCompleteDetails
 } from './screens'
+import { apiGetProfile } from './api/getProfile'
 
 const titleTopbar = {
   register: 'Create an Account',
@@ -100,7 +101,8 @@ const AppStackWithDrawer = createDrawerNavigator(
             navigationOptions: {
               title: 'New Job',
               headerLeft: null
-            }
+            },
+            params: { test: '123' }
           },
 
           AssignedTechnicians: {
@@ -183,7 +185,6 @@ const AppStackWithDrawer = createDrawerNavigator(
     })
   },
   {
-    initialRouteName: 'AppStack',
     contentComponent: DrawerCustom
   }
 )
@@ -217,13 +218,53 @@ export default class App extends React.Component {
   constructor(props) {
     super(props)
 
+    this.state = {
+      profile: null
+    }
+
     if (Platform.OS === 'android') {
       UIManager.setLayoutAnimationEnabledExperimental &&
         UIManager.setLayoutAnimationEnabledExperimental(true)
     }
   }
 
+  componentDidMount() {
+    apiGetProfile().then(res => this.setState({ profile: res.data }))
+  }
+
+  getProfile = () => {
+    apiGetProfile().then(res => this.setState({ profile: res.data }))
+  }
+
+  clearProfile = () => {
+    this.setState({ profile: null })
+  }
+
+  switchRoleID = () => {
+    const { profile } = this.state
+
+    if (profile.RoleID !== 6) {
+      profile.RoleID = 6
+      this.setState({ profile })
+    } else {
+      this.getProfile()
+    }
+  }
+
   render() {
-    return <AppContainer />
+    const { profile } = this.state
+
+    console.log('profile :', profile)
+
+    return (
+      <AppContainer
+        screenProps={{
+          profile,
+          getProfile: this.getProfile,
+          clearProfile: this.clearProfile,
+          switchRoleID: this.switchRoleID
+        }}
+      />
+    )
   }
 }

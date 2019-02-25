@@ -1,15 +1,8 @@
 import React, { Component } from 'react'
-import {
-  View,
-  Text,
-  TouchableHighlight,
-  Image,
-  AsyncStorage
-} from 'react-native'
+import { Text, TouchableHighlight, Image, AsyncStorage } from 'react-native'
 import styled from 'styled-components'
 import { Container, Space, Divider, Row, Segment } from '../components'
 import { normalize } from '../utilities'
-import { apiGetProfile } from '../api/getProfile'
 
 const DrawerBgImage = styled(Image)`
   position: absolute;
@@ -45,7 +38,7 @@ const LogoDrawerMenu = styled(Image)`
   height: ${props => (props.small === 1 ? normalize(20) : normalize(25))};
 `
 
-const listMenu = [
+const listMenuTech = [
   {
     name: 'JOB ASSIGNED',
     routeName: 'TasksJobAssigned',
@@ -74,22 +67,30 @@ const listMenu = [
   }
 ]
 
+const listMenuLeadTech = [
+  {
+    name: 'ALL JOB',
+    routeName: 'TasksNewJob',
+    logo: require('../assets/images/menuAllJobIcon.png'),
+    small: 1
+  },
+  {
+    name: 'SETTING',
+    routeName: '',
+    logo: require('../assets/images/menuSettingIcon.png'),
+    small: 1
+  }
+]
+
 class DrawerCustom extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      profile: null
-    }
-  }
-
-  componentDidMount() {
-    apiGetProfile().then(res => this.setState({ profile: res.data }))
-  }
-
   render() {
-    const { profile } = this.state
-
     const { navigation } = this.props
+
+    const { profile, clearProfile, switchRoleID } = this.props.screenProps
+
+    const roleId = profile ? profile.RoleID : null
+
+    const listMenu = roleId !== 6 ? listMenuLeadTech : listMenuTech
 
     return (
       <DrawerContainer noPdSide={1}>
@@ -129,7 +130,7 @@ class DrawerCustom extends Component {
                 >
                   <Space pdtop={4} pdbottom={4}>
                     <Segment.Center>
-                      <Row width="58%">
+                      <Row width={roleId !== 6 ? '40%' : '58%'}>
                         <Space mgright={info.small ? 12 : 6}>
                           <LogoDrawerMenu
                             source={info.logo}
@@ -153,12 +154,13 @@ class DrawerCustom extends Component {
               underlayColor="#D0103A"
               onPress={() => {
                 AsyncStorage.removeItem('@token')
+                clearProfile()
                 navigation.navigate('AuthLoading')
               }}
             >
               <Space pdtop={4} pdbottom={4}>
                 <Segment.Center>
-                  <Row width="54%">
+                  <Row width={roleId !== 6 ? '36%' : '54%'}>
                     <Space mgright={8}>
                       <LogoDrawerMenu
                         source={require('../assets/images/menuLogoutIcon.png')}
@@ -174,6 +176,36 @@ class DrawerCustom extends Component {
               </Space>
             </DrawerMenuBtn>
           </Space>
+        </Space>
+
+        <Space flex={1} style={{ flexDirection: 'row' }} pdtop={6}>
+          <DrawerMenuBtn
+            style={{ alignSelf: 'flex-end' }}
+            underlayColor="rgba(0,0,0,0)"
+            onPress={() => {
+              switchRoleID()
+              navigation.navigate(
+                roleId !== 6 ? 'TasksJobAssigned' : 'TasksNewJob'
+              )
+            }}
+          >
+            <Space pdtop={4} pdbottom={4}>
+              <Segment.Center>
+                <Row>
+                  <Space mgright={8}>
+                    <LogoDrawerMenu
+                      source={require('../assets/images/menuSwitchIcon.png')}
+                      resizeMode="contain"
+                      small={1}
+                    />
+                  </Space>
+                  <Segment.CenterMiddle>
+                    <DrawerMenuBtnText>SWITCH TO TECHNICIAN</DrawerMenuBtnText>
+                  </Segment.CenterMiddle>
+                </Row>
+              </Segment.Center>
+            </Space>
+          </DrawerMenuBtn>
         </Space>
       </DrawerContainer>
     )

@@ -84,7 +84,8 @@ const TopMenu = props => {
     assignedCount,
     processCount,
     completedCount,
-    roleId
+    roleId,
+    leadTech
   } = props
 
   const CustomLayoutLinear = {
@@ -107,7 +108,7 @@ const TopMenu = props => {
     <Space pdleft={4} pdright={4} pdbottom={8}>
       {roleId ? (
         <Row>
-          {roleId === 6 ? null : (
+          {roleId === 6 || !leadTech ? null : (
             <Button
               flex={1}
               imgPdLeft={6}

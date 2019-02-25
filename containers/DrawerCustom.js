@@ -86,11 +86,16 @@ class DrawerCustom extends Component {
   render() {
     const { navigation } = this.props
 
-    const { profile, clearProfile, switchRoleID } = this.props.screenProps
+    const {
+      profile,
+      leadTech,
+      clearProfile,
+      switchRoleID
+    } = this.props.screenProps
 
     const roleId = profile ? profile.RoleID : null
 
-    const listMenu = roleId !== 6 ? listMenuLeadTech : listMenuTech
+    const listMenu = leadTech ? listMenuLeadTech : listMenuTech
 
     return (
       <DrawerContainer noPdSide={1}>
@@ -130,7 +135,7 @@ class DrawerCustom extends Component {
                 >
                   <Space pdtop={4} pdbottom={4}>
                     <Segment.Center>
-                      <Row width={roleId !== 6 ? '40%' : '58%'}>
+                      <Row width={leadTech ? '40%' : '58%'}>
                         <Space mgright={info.small ? 12 : 6}>
                           <LogoDrawerMenu
                             source={info.logo}
@@ -160,7 +165,7 @@ class DrawerCustom extends Component {
             >
               <Space pdtop={4} pdbottom={4}>
                 <Segment.Center>
-                  <Row width={roleId !== 6 ? '36%' : '54%'}>
+                  <Row width={leadTech ? '37%' : '54%'}>
                     <Space mgright={8}>
                       <LogoDrawerMenu
                         source={require('../assets/images/menuLogoutIcon.png')}
@@ -178,35 +183,39 @@ class DrawerCustom extends Component {
           </Space>
         </Space>
 
-        <Space flex={1} style={{ flexDirection: 'row' }} pdtop={6}>
-          <DrawerMenuBtn
-            style={{ alignSelf: 'flex-end' }}
-            underlayColor="rgba(0,0,0,0)"
-            onPress={() => {
-              switchRoleID()
-              navigation.navigate(
-                roleId !== 6 ? 'TasksJobAssigned' : 'TasksNewJob'
-              )
-            }}
-          >
-            <Space pdtop={4} pdbottom={4}>
-              <Segment.Center>
-                <Row>
-                  <Space mgright={8}>
-                    <LogoDrawerMenu
-                      source={require('../assets/images/menuSwitchIcon.png')}
-                      resizeMode="contain"
-                      small={1}
-                    />
-                  </Space>
-                  <Segment.CenterMiddle>
-                    <DrawerMenuBtnText>SWITCH TO TECHNICIAN</DrawerMenuBtnText>
-                  </Segment.CenterMiddle>
-                </Row>
-              </Segment.Center>
-            </Space>
-          </DrawerMenuBtn>
-        </Space>
+        {roleId === 6 ? null : (
+          <Space flex={1} style={{ flexDirection: 'row' }} pdtop={6}>
+            <DrawerMenuBtn
+              style={{ alignSelf: 'flex-end' }}
+              underlayColor="rgba(0,0,0,0)"
+              onPress={() => {
+                switchRoleID()
+                navigation.navigate(
+                  leadTech ? 'TasksJobAssigned' : 'TasksNewJob'
+                )
+              }}
+            >
+              <Space pdtop={4} pdbottom={4}>
+                <Segment.Center>
+                  <Row>
+                    <Space mgright={8}>
+                      <LogoDrawerMenu
+                        source={require('../assets/images/menuSwitchIcon.png')}
+                        resizeMode="contain"
+                        small={1}
+                      />
+                    </Space>
+                    <Segment.CenterMiddle>
+                      <DrawerMenuBtnText>
+                        SWITCH TO TECHNICIAN
+                      </DrawerMenuBtnText>
+                    </Segment.CenterMiddle>
+                  </Row>
+                </Segment.Center>
+              </Space>
+            </DrawerMenuBtn>
+          </Space>
+        )}
       </DrawerContainer>
     )
   }

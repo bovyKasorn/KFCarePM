@@ -219,7 +219,8 @@ export default class App extends React.Component {
     super(props)
 
     this.state = {
-      profile: null
+      profile: null,
+      leadTech: false
     }
 
     if (Platform.OS === 'android') {
@@ -229,38 +230,42 @@ export default class App extends React.Component {
   }
 
   componentDidMount() {
-    apiGetProfile().then(res => this.setState({ profile: res.data }))
+    apiGetProfile().then(res =>
+      this.setState({
+        profile: res.data,
+        leadTech: res.data.RoleID === 6 ? false : true
+      })
+    )
   }
 
   getProfile = () => {
-    apiGetProfile().then(res => this.setState({ profile: res.data }))
+    apiGetProfile().then(res =>
+      this.setState({
+        profile: res.data,
+        leadTech: res.data.RoleID === 6 ? false : true
+      })
+    )
   }
 
   clearProfile = () => {
-    this.setState({ profile: null })
+    this.setState({ profile: null, leadTech: false })
   }
 
   switchRoleID = () => {
-    const { profile } = this.state
+    const { leadTech } = this.state
 
-    if (profile.RoleID !== 6) {
-      profile.RoleID = 6
-      this.setState({ profile })
-    } else {
-      this.getProfile()
-    }
+    this.setState({ leadTech: !leadTech })
   }
 
   render() {
-    const { profile } = this.state
-
-    console.log('profile :', profile)
+    const { profile, leadTech } = this.state
 
     return (
       <AppContainer
         screenProps={{
           profile,
           getProfile: this.getProfile,
+          leadTech,
           clearProfile: this.clearProfile,
           switchRoleID: this.switchRoleID
         }}

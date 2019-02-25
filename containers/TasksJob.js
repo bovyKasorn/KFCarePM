@@ -80,7 +80,7 @@ class TasksJob extends Component {
 
     const { navigation, tasksActive } = this.props
 
-    const { profile } = this.props.screenProps
+    const { profile, leadTech } = this.props.screenProps
 
     const roleId = profile ? profile.RoleID : null
 
@@ -110,7 +110,7 @@ class TasksJob extends Component {
           <TasksLists
             navigation={navigation}
             tasksLists={tasksJobProcessLists}
-            tasksActive={roleId === 6 ? tasksActive : 'completed'}
+            tasksActive={roleId === 6 || !leadTech ? tasksActive : 'completed'}
           />
         )
         break
@@ -137,6 +137,7 @@ class TasksJob extends Component {
           processCount={tasksJobProcessLists.length}
           completedCount={tasksCompletedLists.length}
           roleId={roleId}
+          leadTech={leadTech}
         />
         <KeyboardAvoidAndScroll flex={1}>
           <Space>{tasks}</Space>

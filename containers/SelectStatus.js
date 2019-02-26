@@ -3,28 +3,15 @@ import { Picker, Platform } from 'react-native'
 import { Select } from '../components'
 
 class SelectStatus extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      status: [
-        { statusID: 1, label: 'Normal' },
-        { statusID: 2, label: 'Class A' },
-        { statusID: 3, label: 'Class B' },
-        { statusID: 4, label: 'Class C' }
-      ]
-    }
-  }
-
   render() {
-    const { status } = this.state
-
-    const { statusSelected, handleSelectStatus } = this.props
+    const { status, statusSelected, handleSelectStatus } = this.props
 
     const labelSelected =
       Platform.OS === 'android'
         ? ''
         : statusSelected || statusSelected === 0
-        ? status[status.findIndex(sta => sta.statusID === statusSelected)].label
+        ? status[status.findIndex(sta => sta.ClassLevelID === statusSelected)]
+            .ClassLevelName
         : ''
 
     return (
@@ -36,7 +23,11 @@ class SelectStatus extends Component {
       >
         {status.map((sta, index) => {
           return (
-            <Picker.Item key={index} label={sta.label} value={sta.statusID} />
+            <Picker.Item
+              key={index}
+              label={sta.ClassLevelName}
+              value={sta.ClassLevelID}
+            />
           )
         })}
       </Select>

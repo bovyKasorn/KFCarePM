@@ -4,8 +4,30 @@ import { Select } from '../components'
 import { apiGetSections } from '../api/getSections'
 
 class SelectSections extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      sections: []
+    }
+  }
+
+  componentDidMount() {
+    const { handleSelectSections } = this.props
+
+    apiGetSections().then(res => {
+      this.setState({
+        sections: res.data
+      })
+
+      handleSelectSections(
+        Platform.OS === 'android' ? res.data[0].SectionID : null
+      )
+    })
+  }
+
   render() {
-    const { sections, sectionSelected, handleSelectSections } = this.props
+    const { sections } = this.state
+    const { sectionSelected, handleSelectSections } = this.props
 
     const labelSelected =
       Platform.OS === 'android'

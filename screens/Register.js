@@ -19,7 +19,6 @@ import {
 } from '../containers'
 import { normalize } from '../utilities'
 import { apiRegister } from '../api/Register'
-import { apiGetSections } from '../api/getSections'
 
 class RegisterInformation extends React.Component {
   constructor(props) {
@@ -31,21 +30,10 @@ class RegisterInformation extends React.Component {
       password: null,
       empId: null,
       mobile: null,
-      sections: [],
-      sectionSelected: Platform.OS === 'android' ? 1 : null,
+      sectionSelected: null,
       loading: false,
       resApi: null
     }
-  }
-
-  componentDidMount() {
-    apiGetSections().then(res => {
-      this.setState({
-        sections: res.data,
-        sectionSelected:
-          Platform.OS === 'android' ? res.data[0].SectionID : null
-      })
-    })
   }
 
   handleInput = (text, name) => {
@@ -68,7 +56,6 @@ class RegisterInformation extends React.Component {
       password,
       empId,
       mobile,
-      sections,
       sectionSelected,
       loading,
       resApi
@@ -149,7 +136,6 @@ class RegisterInformation extends React.Component {
                 value={mobile}
               />
               <SelectSections
-                sections={sections}
                 sectionSelected={sectionSelected}
                 handleSelectSections={this.handleSelectSections}
               />

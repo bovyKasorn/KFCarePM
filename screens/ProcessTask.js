@@ -24,6 +24,7 @@ import {
 } from '../containers'
 import { apiGetTasksDetails } from '../api/getTasks'
 import { apiSaveTasksDetails } from '../api/SaveTask'
+import { apiGetStatusClassLevel } from '../api/getStatusClassLevel'
 import { normalize } from '../utilities'
 
 class ProcessTask extends Component {
@@ -33,6 +34,7 @@ class ProcessTask extends Component {
     this.state = {
       taskDetails: {},
       results: [],
+      status: [],
       statusSelected: Platform.OS === 'android' ? 1 : null,
       addImage: false,
       completed: false,
@@ -42,22 +44,25 @@ class ProcessTask extends Component {
   }
 
   checkStatusSelected = status => {
-    switch (status) {
-      case 'Normal':
-        return 1
-      case 'Class A':
-        return 2
-      case 'Class B':
-        return 3
-      case 'Class C':
-        return 4
-      default:
-        return null
+    const statusList = this.state.status
+
+    if (status) {
+      return statusList[
+        statusList.findIndex(sta => sta.ClassLevelName === status)
+      ].ClassLevelID
+    } else {
+      return Platform.OS === 'android' ? statusList[0].ClassLevelID : null
     }
   }
 
   componentDidMount() {
     const { navigation } = this.props
+
+    apiGetStatusClassLevel().then(res => {
+      this.setState({
+        status: res.data
+      })
+    })
 
     const TaskId = navigation.getParam('TaskId')
 
@@ -82,7 +87,7 @@ class ProcessTask extends Component {
 
     const resultIndex = results.findIndex(result => result.ResultID === id)
 
-    if (resultIndex === -1 && text.trim() !== '') {
+    if (resultIndex === -1) {
       results.push({
         ResultID: id,
         Result: text,
@@ -90,7 +95,6 @@ class ProcessTask extends Component {
       })
     } else {
       if (text.trim() === '') {
-        // results.splice(resultIndex, 1)
         results[resultIndex].Result = ''
       } else {
         results[resultIndex].Result = text
@@ -127,7 +131,7 @@ class ProcessTask extends Component {
           ],
           { cancelable: false }
         )
-    }
+      }
       return
     }
   }
@@ -170,42 +174,42 @@ class ProcessTask extends Component {
       return
     }
 
-    let saveHistory = false
+    // let saveHistory = false
 
-    let numResult = 0
+    // let numResult = 0
 
-    taskDetails.Details.map(detail => {
-      detail.Results.map(rs => {
-        numResult += 1
-        if (rs.Result !== null) {
-          saveHistory = true
-        }
-      })
-    })
+    // taskDetails.Details.map(detail => {
+    //   detail.Results.map(rs => {
+    //     numResult += 1
+    //     if (rs.Result !== null) {
+    //       saveHistory = true
+    //     }
+    //   })
+    // })
 
-    const alert = () =>
-      Alert.alert(
-        '',
-        'Please fill up this form',
-        [{ text: 'OK', onPress: () => {} }],
-        { cancelable: false }
-      )
+    // const alert = () =>
+    //   Alert.alert(
+    //     '',
+    //     'Please fill up this form',
+    //     [{ text: 'OK', onPress: () => {} }],
+    //     { cancelable: false }
+    //   )
 
-    const checkEmptyString = results.findIndex(
-      rs => rs.Result === '' || rs.Result === null
-    )
+    // const checkEmptyString = results.findIndex(
+    //   rs => rs.Result === '' || rs.Result === null
+    // )
 
-    if (saveHistory && checkEmptyString !== -1) {
-      alert()
+    // if (saveHistory && checkEmptyString !== -1) {
+    //   alert()
 
-      return
-    } else if (!saveHistory) {
-      if (results.length !== numResult || checkEmptyString !== -1) {
-        alert()
+    //   return
+    // } else if (!saveHistory) {
+    //   if (results.length !== numResult || checkEmptyString !== -1) {
+    //     alert()
 
-        return
-      }
-    }
+    //     return
+    //   }
+    // }
 
     this.handleLoading(true)
 
@@ -238,6 +242,7 @@ class ProcessTask extends Component {
   render() {
     const {
       taskDetails,
+      status,
       statusSelected,
       results,
       addImage,
@@ -343,6 +348,7 @@ class ProcessTask extends Component {
             <Space pdleft={15} pdright={15}>
               <Space>
                 <SelectStatus
+                  status={status}
                   statusSelected={statusSelected}
                   handleSelectStatus={this.handleSelectStatus}
                 />

@@ -25,6 +25,7 @@ class RegisterInformation extends React.Component {
     super(props)
     this.state = {
       fullName: null,
+      nickName: null,
       email: null,
       username: null,
       password: null,
@@ -51,6 +52,7 @@ class RegisterInformation extends React.Component {
   render() {
     const {
       fullName,
+      nickName,
       email,
       username,
       password,
@@ -80,6 +82,15 @@ class RegisterInformation extends React.Component {
                 autoCapitalize="none"
                 onChangeText={text => this.handleInput(text, 'fullName')}
                 value={fullName}
+              />
+              <Input
+                ref={input => {
+                  this.nickNameInput = input
+                }}
+                placeholder="Nickname"
+                autoCapitalize="none"
+                onChangeText={text => this.handleInput(text, 'nickName')}
+                value={nickName}
               />
               <Input
                 ref={input => {
@@ -157,6 +168,7 @@ class RegisterInformation extends React.Component {
                 onPress={async () => {
                   const information = {
                     fullName,
+                    nickName,
                     email,
                     username,
                     password,

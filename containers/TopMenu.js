@@ -4,7 +4,8 @@ import {
   TouchableHighlight,
   Image,
   View,
-  LayoutAnimation
+  LayoutAnimation,
+  Platform
 } from 'react-native'
 import styled from 'styled-components'
 import maintheme from '../theme'
@@ -48,7 +49,12 @@ const Button = props => {
   const tasksCount = props.tasksCount || 0
 
   return (
-    <Space flex={1} height={100} mgleft={2} mgright={2}>
+    <Space
+      flex={1}
+      height={100}
+      mgleft={Platform.OS === 'android' ? 6 : 2}
+      mgright={Platform.OS === 'android' ? 6 : 2}
+    >
       <NotiView count={tasksCount}>
         <Space pdtop={1} pdbottom={1} pdleft={3} pdright={3}>
           <ButtonText>{tasksCount}</ButtonText>

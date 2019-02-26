@@ -47,11 +47,16 @@ class ProcessTask extends Component {
     const statusList = this.state.status
 
     if (status) {
-      return statusList[
-        statusList.findIndex(sta => sta.ClassLevelName === status)
-      ].ClassLevelID
+      this.setState({
+        statusSelected:
+          statusList[statusList.findIndex(sta => sta.ClassLevelName === status)]
+            .ClassLevelID
+      })
     } else {
-      return Platform.OS === 'android' ? statusList[0].ClassLevelID : null
+      this.setState({
+        statusSelected:
+          Platform.OS === 'android' ? statusList[0].ClassLevelID : null
+      })
     }
   }
 
@@ -67,10 +72,12 @@ class ProcessTask extends Component {
     const TaskId = navigation.getParam('TaskId')
 
     apiGetTasksDetails(TaskId).then(response => {
-      this.setState({
-        taskDetails: response.data,
-        statusSelected: this.checkStatusSelected(response.data.ClassLevelName)
-      })
+      this.setState(
+        {
+          taskDetails: response.data
+        },
+        () => this.checkStatusSelected(response.data.ClassLevelName)
+      )
     })
   }
 
@@ -493,13 +500,11 @@ class ProcessTaskSelect extends Component {
   render() {
     const { resultTaskSelect } = this.state
 
+    console.log('resultTaskSelect :', resultTaskSelect)
+
     const { result } = this.props
 
-    const labelSelected = resultTaskSelect
-      ? Platform.OS === 'android'
-        ? ''
-        : resultTaskSelect.Result
-      : null
+    const labelSelected = resultTaskSelect ? resultTaskSelect.Result : null
 
     return (
       <Select

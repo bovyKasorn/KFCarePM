@@ -150,6 +150,7 @@ class TasksDetails extends Component {
           <SegmentAssignedTechnicians
             navigation={navigation}
             taskId={details.TaskID}
+            status={details.ClassLevelName}
           />
         ) : (
           <Space pdleft={20} pdright={20} pdtop={18}>

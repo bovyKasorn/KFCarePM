@@ -12,7 +12,6 @@ class SegmentAssignedTechnicians extends Component {
     this.state = {
       technicians: [],
       technicianSelected: [{ TechnicianID: null, TechnicianName: null }],
-      statusSelected: Platform.OS === 'android' ? 1 : null,
       loading: false
     }
   }
@@ -86,10 +85,6 @@ class SegmentAssignedTechnicians extends Component {
     this.setState({ technicianSelected, technicians })
   }
 
-  handleSelectStatus = status => {
-    this.setState({ statusSelected: status })
-  }
-
   submitAssigned = async () => {
     const { technicianSelected } = this.state
     const { taskId, navigation } = this.props
@@ -136,12 +131,9 @@ class SegmentAssignedTechnicians extends Component {
   }
 
   render() {
-    const {
-      technicians,
-      technicianSelected,
-      statusSelected,
-      loading
-    } = this.state
+    const { technicians, technicianSelected, loading } = this.state
+
+    const { status } = this.props
 
     return (
       <Space pdleft={15} pdright={15} pdtop={14}>
@@ -165,10 +157,9 @@ class SegmentAssignedTechnicians extends Component {
             <Font.H2 bold={1}>Status</Font.H2>
           </Row>
 
-          <SelectStatus
-            statusSelected={statusSelected}
-            handleSelectStatus={this.handleSelectStatus}
-          />
+          <Space>
+            <Font.H2>{status || '-'}</Font.H2>
+          </Space>
         </Space>
 
         <Space pdtop={8}>

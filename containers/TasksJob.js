@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { ActivityIndicator } from 'react-native'
 import { KeyboardAvoidAndScroll, TasksDetails, TopMenu } from '../containers'
 import { Container, Space, Segment, Font } from '../components'
 import styled from 'styled-components'
@@ -48,25 +49,34 @@ class TasksJob extends Component {
       tasksNewJobLists: [],
       tasksJobAssignedLists: [],
       tasksJobProcessLists: [],
-      tasksCompletedLists: []
+      tasksCompletedLists: [],
+      loading: false
     }
   }
 
+  handleLoading = loading => {
+    this.setState({ loading })
+  }
+
   componentDidMount() {
-    apiGetTasksNewJob().then(response => {
-      this.setState({ tasksNewJobLists: response.data })
-    })
+    this.handleLoading(true)
 
-    apiGetTasksJobAssigned().then(response => {
-      this.setState({ tasksJobAssignedLists: response.data })
-    })
+    const api = [
+      apiGetTasksNewJob(),
+      apiGetTasksJobAssigned(),
+      apiGetTasksJobProcess(),
+      apiGetTasksCompleted()
+    ]
 
-    apiGetTasksJobProcess().then(response => {
-      this.setState({ tasksJobProcessLists: response.data })
-    })
+    Promise.all(api).then(response => {
+      this.setState({
+        tasksNewJobLists: response[0].data,
+        tasksJobAssignedLists: response[1].data,
+        tasksJobProcessLists: response[2].data,
+        tasksCompletedLists: response[3].data
+      })
 
-    apiGetTasksCompleted().then(response => {
-      this.setState({ tasksCompletedLists: response.data })
+      this.handleLoading(false)
     })
   }
 
@@ -75,7 +85,8 @@ class TasksJob extends Component {
       tasksNewJobLists,
       tasksJobAssignedLists,
       tasksJobProcessLists,
-      tasksCompletedLists
+      tasksCompletedLists,
+      loading
     } = this.state
 
     const { navigation, tasksActive } = this.props
@@ -140,7 +151,15 @@ class TasksJob extends Component {
           leadTech={leadTech}
         />
         <KeyboardAvoidAndScroll flex={1}>
-          <Space>{tasks}</Space>
+          <Space>
+            {loading ? (
+              <Space mgtop={16}>
+                <ActivityIndicator />
+              </Space>
+            ) : (
+              tasks
+            )}
+          </Space>
         </KeyboardAvoidAndScroll>
       </ContainerNonePdBottom>
     )

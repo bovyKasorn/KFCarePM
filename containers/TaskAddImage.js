@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { TouchableHighlight, Text, Image, Keyboard } from 'react-native'
+import { TouchableHighlight, Text, Image, Keyboard, Alert } from 'react-native'
 import styled from 'styled-components'
 import ImagePicker from 'react-native-image-picker'
 import { ModalLoading } from '../containers'
@@ -61,7 +61,8 @@ class TaskAddImage extends Component {
       imageAfterQuery: [],
       imageBefore: [{ TaskID: taskId, Comment: '', ImageBase64: null }],
       imageAfter: [{ TaskID: taskId, Comment: '', ImageBase64: null }],
-      loading: false
+      loading: false,
+      resApi: null
     }
   }
 
@@ -82,6 +83,10 @@ class TaskAddImage extends Component {
 
   handleAddImage = (status, index) => {
     const options = {
+      mediaType: 'photo',
+      maxWidth: 600,
+      maxHeight: 800,
+      quality: 0.8,
       storageOptions: {
         skipBackup: true,
         path: 'images'
@@ -162,7 +167,7 @@ class TaskAddImage extends Component {
     return image
   }
 
-  handleImageSave = async () => {
+  handleImageSave = () => {
     const { imageBefore, imageAfter } = this.state
 
     Keyboard.dismiss()
@@ -177,7 +182,7 @@ class TaskAddImage extends Component {
       imageBe.push(img)
     })
 
-    this.checkImageNull(imageBe).forEach(async img => {
+    this.checkImageNull(imageBe).forEach(img => {
       response.push(apiPostImagesBefore(img))
     })
 
@@ -187,14 +192,23 @@ class TaskAddImage extends Component {
       imageAf.push(img)
     })
 
-    this.checkImageNull(imageAf).forEach(async img => {
+    this.checkImageNull(imageAf).forEach(img => {
       response.push(apiPostImagesAfter(img))
     })
 
-    Promise.all(response).then(res => {
+    Promise.all(response).then(response => {
+      const errImg = response.findIndex(res => res.data !== '')
+
+      if (errImg !== -1) {
+        this.setState({ resApi: response[errImg].data }, () =>
+          this.handleLoading(false)
+        )
+
+        return
+      }
+
       this.handleLoading(false)
 
-      // console.log(res)
       this.props.handleAddImageStatus(false)
     })
   }
@@ -205,7 +219,8 @@ class TaskAddImage extends Component {
       imageBefore,
       imageAfterQuery,
       imageAfter,
-      loading
+      loading,
+      resApi
     } = this.state
 
     const { handleAddImageStatus } = this.props
@@ -379,16 +394,21 @@ class TaskAddImage extends Component {
 
         <ModalLoading
           loading={loading}
-          // onDismiss={() =>
-          //   resApi
-          //     ? Alert.alert(
-          //         '',
-          //         resApi.data.error_description || 'Error',
-          //         [{ text: 'OK', onPress: () => {} }],
-          //         { cancelable: false }
-          //       )
-          //     : {}
-          // }
+          onDismiss={() =>
+            resApi
+              ? Alert.alert(
+                  '',
+                  resApi,
+                  [
+                    {
+                      text: 'OK',
+                      onPress: () => this.props.handleAddImageStatus(false)
+                    }
+                  ],
+                  { cancelable: false }
+                )
+              : {}
+          }
         />
       </Space>
     )

@@ -500,8 +500,6 @@ class ProcessTaskSelect extends Component {
   render() {
     const { resultTaskSelect } = this.state
 
-    console.log('resultTaskSelect :', resultTaskSelect)
-
     const { result } = this.props
 
     const labelSelected = resultTaskSelect ? resultTaskSelect.Result : null

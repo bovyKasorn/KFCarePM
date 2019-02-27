@@ -76,7 +76,7 @@ class TasksDetails extends Component {
           }}
         > */}
         <Space pdleft={8} pdtop={6}>
-          <Font.H1 primary={1}>Machine Name 1</Font.H1>
+          <Font.H1 primary={1}>{details.InventoryName}</Font.H1>
         </Space>
         {/* </Animated.View> */}
 
@@ -110,7 +110,7 @@ class TasksDetails extends Component {
               </Font.H2>
 
               <Font.H2 bold={1}>
-                Sub Machine : <Font.H2>Lorem Ipsum is simply dummy</Font.H2>
+                Sub Machine : <Font.H2>{details.GroupName ? details.GroupName : '-'}</Font.H2>
               </Font.H2>
 
               <Font.H2 bold={1}>

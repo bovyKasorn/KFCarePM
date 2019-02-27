@@ -14,7 +14,7 @@ export async function apiGetTasksNewJob() {
         }
       }
     )
-
+    console.log('apiGetTasksNewJob = ', response);
     return response
   } catch (error) {
     return error.response

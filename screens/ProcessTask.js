@@ -35,7 +35,7 @@ class ProcessTask extends Component {
       taskDetails: {},
       results: [],
       status: [],
-      statusSelected: Platform.OS === 'android' ? 1 : null,
+      statusSelected: null,
       addImage: false,
       completed: false,
       loading: false,
@@ -43,42 +43,43 @@ class ProcessTask extends Component {
     }
   }
 
-  checkStatusSelected = status => {
-    const statusList = this.state.status
+  checkStatusSelected = classLevel => {
+    const { status } = this.state
 
-    if (status) {
+    if (classLevel) {
+      const statusIndex = status.findIndex(
+        sta => sta.ClassLevelName === classLevel
+      )
+
       this.setState({
-        statusSelected:
-          statusList[statusList.findIndex(sta => sta.ClassLevelName === status)]
-            .ClassLevelID
+        statusSelected: status[statusIndex].ClassLevelID
       })
     } else {
       this.setState({
-        statusSelected:
-          Platform.OS === 'android' ? statusList[0].ClassLevelID : null
+        statusSelected: status[0].ClassLevelID
       })
     }
   }
 
-  componentDidMount() {
+  componentDidMount = async () => {
     const { navigation } = this.props
 
-    apiGetStatusClassLevel().then(res => {
-      this.setState({
-        status: res.data
-      })
+    const statusList = await apiGetStatusClassLevel()
+
+    this.setState({
+      status: statusList.data
     })
 
     const TaskId = navigation.getParam('TaskId')
 
-    apiGetTasksDetails(TaskId).then(response => {
-      this.setState(
-        {
-          taskDetails: response.data
-        },
-        () => this.checkStatusSelected(response.data.ClassLevelName)
-      )
-    })
+    const taskDetail = await apiGetTasksDetails(TaskId)
+
+    this.setState(
+      {
+        taskDetails: taskDetail.data
+      },
+      () => this.checkStatusSelected(taskDetail.data.ClassLevelName)
+    )
   }
 
   handleLoading = loading => {
@@ -444,9 +445,7 @@ class ProcessTaskSelect extends Component {
       })
 
       return
-    }
-
-    if (Platform.OS === 'android') {
+    } else {
       this.setState(
         {
           resultTaskSelect: {

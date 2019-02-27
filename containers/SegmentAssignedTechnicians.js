@@ -23,16 +23,14 @@ class SegmentAssignedTechnicians extends Component {
           technicians: res.data
         },
         () =>
-          Platform.OS === 'android'
-            ? this.setState({
-                technicianSelected: [
-                  {
-                    TechnicianID: this.state.technicians[0].TechnicianID,
-                    TechnicianName: this.state.technicians[0].TechnicianName
-                  }
-                ]
-              })
-            : null
+          this.setState({
+            technicianSelected: [
+              {
+                TechnicianID: this.state.technicians[0].TechnicianID,
+                TechnicianName: this.state.technicians[0].TechnicianName
+              }
+            ]
+          })
       )
     })
   }
@@ -62,14 +60,8 @@ class SegmentAssignedTechnicians extends Component {
     const { technicianSelected } = this.state
 
     technicianSelected.push({
-      TechnicianID:
-        Platform.OS === 'android'
-          ? this.state.technicians[0].TechnicianID
-          : null,
-      TechnicianName:
-        Platform.OS === 'android'
-          ? this.state.technicians[0].TechnicianName
-          : null
+      TechnicianID: this.state.technicians[0].TechnicianID,
+      TechnicianName: this.state.technicians[0].TechnicianName
     })
 
     this.setState({ technicianSelected })

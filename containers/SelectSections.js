@@ -19,9 +19,7 @@ class SelectSections extends Component {
         sections: res.data
       })
 
-      handleSelectSections(
-        Platform.OS === 'android' ? res.data[0].SectionID : null
-      )
+      handleSelectSections(res.data[0].SectionID)
     })
   }
 

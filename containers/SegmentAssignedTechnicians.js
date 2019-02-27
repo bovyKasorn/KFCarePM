@@ -133,7 +133,7 @@ class SegmentAssignedTechnicians extends Component {
   render() {
     const { technicians, technicianSelected, loading } = this.state
 
-    const { status } = this.props
+    const { status, comment, commentTech } = this.props
 
     return (
       <Space pdleft={15} pdright={15} pdtop={14}>
@@ -169,10 +169,7 @@ class SegmentAssignedTechnicians extends Component {
           </Row>
 
           <Space>
-            <Font.H2>
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry.
-            </Font.H2>
+            <Font.H2>{comment}</Font.H2>
           </Space>
         </Space>
 
@@ -183,10 +180,7 @@ class SegmentAssignedTechnicians extends Component {
           </Row>
 
           <Space>
-            <Font.H2>
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry.
-            </Font.H2>
+            <Font.H2>{commentTech}</Font.H2>
           </Space>
         </Space>
 

@@ -151,6 +151,10 @@ class TasksDetails extends Component {
             navigation={navigation}
             taskId={details.TaskID}
             status={details.ClassLevelName}
+            comment={details.CommentInventory ? details.CommentInventory : '-'}
+            commentTech={
+              details.CommentTechnician ? details.CommentTechnician : '-'
+            }
           />
         ) : (
           <Space pdleft={20} pdright={20} pdtop={18}>

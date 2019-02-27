@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Text, TouchableHighlight, Image, AsyncStorage } from 'react-native'
+import { StackActions, NavigationActions } from 'react-navigation'
 import styled from 'styled-components'
 import { Container, Space, Divider, Row, Segment } from '../components'
 import { normalize } from '../utilities'
@@ -83,7 +84,21 @@ const listMenuLeadTech = [
 ]
 
 class DrawerCustom extends Component {
+  constructor(props) {
+    super(props)
+
+    const { profile } = this.props.screenProps
+
+    const roleId = profile ? profile.RoleID : null
+
+    this.state = {
+      activePage: roleId !== 6 ? 'TasksNewJob' : 'TasksJobAssigned'
+    }
+  }
+
   render() {
+    const { activePage } = this.state
+
     const { navigation } = this.props
 
     const {
@@ -131,6 +146,19 @@ class DrawerCustom extends Component {
                   underlayColor="#D0103A"
                   onPress={() => {
                     navigation.navigate(info.routeName)
+
+                    const resetAction = StackActions.reset({
+                      index: 0,
+                      actions: [
+                        NavigationActions.navigate({
+                          routeName: info.routeName
+                        })
+                      ]
+                    })
+
+                    navigation.dispatch(resetAction)
+
+                    return
                   }}
                 >
                   <Space pdtop={4} pdbottom={4}>

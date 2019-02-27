@@ -101,8 +101,7 @@ const AppStackWithDrawer = createDrawerNavigator(
             navigationOptions: {
               title: 'New Job',
               headerLeft: null
-            },
-            params: { test: '123' }
+            }
           },
 
           AssignedTechnicians: {

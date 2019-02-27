@@ -81,15 +81,25 @@ const AuthStack = createStackNavigator(
   }
 )
 
-const defaultNavigationOptions = ({ navigation }) => ({
-  headerStyle,
-  headerTitleStyle,
-  headerLeftContainerStyle,
-  headerRightContainerStyle,
-  headerBackTitle: null,
-  headerBackImage,
-  headerRight: <HeaderDrawerButton navigation={navigation} />
-})
+const defaultNavigationOptions = ({ navigation }) => {
+  return Platform.OS === 'android'
+    ? {
+        headerStyle,
+        headerTitleStyle,
+        headerLeft: null,
+        headerRightContainerStyle,
+        headerRight: <HeaderDrawerButton navigation={navigation} />
+      }
+    : {
+        headerStyle,
+        headerTitleStyle,
+        headerLeftContainerStyle,
+        headerRightContainerStyle,
+        headerBackTitle: null,
+        headerBackImage,
+        headerRight: <HeaderDrawerButton navigation={navigation} />
+      }
+}
 
 const AppStackWithDrawer = createDrawerNavigator(
   {
